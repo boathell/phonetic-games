@@ -113,6 +113,61 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
+        /* 音标范围选择 */
+        .range-panel {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin: 0 auto 25px;
+            max-width: 760px;
+            text-align: center;
+        }
+
+        .range-title {
+            font-size: 1.1rem;
+            color: #5f27cd;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .range-options {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .range-btn {
+            padding: 10px 22px;
+            border-radius: 30px;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
+            color: #555;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .range-btn.active {
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(10,189,227,0.35);
+        }
+
+        .range-hint {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .range-hint.warn {
+            color: #ff6b6b;
+        }
+
         /* 游戏区域 */
         .game-area {
             background: rgba(255,255,255,0.95);
@@ -741,6 +796,13 @@
             0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -752,6 +814,22 @@
             <button class="nav-btn active" onclick="switchGame(0)">🫧 泡泡龙</button>
             <button class="nav-btn" onclick="switchGame(1)">🔗 连连看</button>
             <button class="nav-btn" onclick="switchGame(2)">✨ 消消乐</button>
+        </div>
+
+        <div class="range-panel">
+            <div class="range-title">音标范围</div>
+            <div class="range-options">
+                <button class="range-btn active" data-range="long" aria-pressed="true" onclick="toggleRange(this)">长元音</button>
+                <button class="range-btn active" data-range="short" aria-pressed="true" onclick="toggleRange(this)">短元音</button>
+                <button class="range-btn active" data-range="diphthong" aria-pressed="true" onclick="toggleRange(this)">双元音</button>
+                <button class="range-btn active" data-range="plosive" aria-pressed="true" onclick="toggleRange(this)">爆破音</button>
+                <button class="range-btn active" data-range="fricative" aria-pressed="true" onclick="toggleRange(this)">摩擦音</button>
+                <button class="range-btn active" data-range="nasal" aria-pressed="true" onclick="toggleRange(this)">鼻音</button>
+                <button class="range-btn active" data-range="lateral" aria-pressed="true" onclick="toggleRange(this)">舌边音</button>
+                <button class="range-btn active" data-range="semivowel" aria-pressed="true" onclick="toggleRange(this)">半元音</button>
+                <button class="range-btn active" data-range="affricate" aria-pressed="true" onclick="toggleRange(this)">破擦音</button>
+            </div>
+            <div class="range-hint" id="range-hint">已选择: 长元音、短元音、双元音、爆破音、摩擦音、鼻音、舌边音、半元音、破擦音（切换会重置当前局）</div>
         </div>
 
         <div class="game-area">
@@ -820,7 +898,7 @@
                     <h2 class="game-title">✨ 音标消消乐</h2>
                     <div class="score-board">
                         <div class="score-item">得分: <span id="eliminate-score">0</span></div>
-                        <div class="score-item">剩余: <span id="eliminate-remaining">20</span></div>
+                        <div class="score-item">剩余: <span id="eliminate-remaining">0</span></div>
                     </div>
                 </div>
                 
@@ -837,7 +915,7 @@
                     <div class="progress-fill" id="eliminate-progress" style="width: 0%"></div>
                 </div>
                 
-                <p class="hint-text">点击两个<strong>元音发音相同</strong>的单词，连接消除！找出10对配对！</p>
+                <p class="hint-text">点击两个<strong>元音发音相同</strong>的单词，连接消除！找出所有配对！</p>
                 
                 <div class="control-panel">
                     <button class="control-btn start-btn" onclick="initEliminateGame()">新的一局</button>
@@ -867,40 +945,80 @@
         // ============ 音标数据 ============
         const phonetics = [
             // 长元音 - /ɑ:/
-            { symbol: '/ɑ:/', sound: 'ar', example: 'car 🚗', word: 'car', words: ['car', 'class', 'pass', 'father', 'park', 'farm', 'half', 'calm'] },
+            { symbol: '/ɑ:/', category: 'long', sound: 'ar', example: 'car 🚗', word: 'car', words: ['car', 'class', 'pass', 'father', 'park', 'farm', 'half', 'calm'] },
             // 长元音 - /ɔ:/
-            { symbol: '/ɔ:/', sound: 'or', example: 'door 🚪', word: 'door', words: ['door', 'ball', 'small', 'tall', 'draw', 'horse', 'pork', 'fork'] },
+            { symbol: '/ɔ:/', category: 'long', sound: 'or', example: 'door 🚪', word: 'door', words: ['door', 'ball', 'small', 'tall', 'draw', 'horse', 'pork', 'fork'] },
             // 长元音 - /ɜ:/
-            { symbol: '/ɜ:/', sound: 'er', example: 'bird 🐦', word: 'bird', words: ['bird', 'sir', 'shirt', 'nurse', 'purple', 'burger', 'word', 'work', 'worm'] },
+            { symbol: '/ɜ:/', category: 'long', sound: 'er', example: 'bird 🐦', word: 'bird', words: ['bird', 'sir', 'shirt', 'nurse', 'purple', 'burger', 'word', 'work', 'worm'] },
             // 长元音 - /i:/
-            { symbol: '/i:/', sound: 'ee', example: 'sheep 🐑', word: 'sheep', words: ['sheep', 'evening', 'she', 'me', 'eat', 'meat', 'tea', 'bee', 'beef', 'feet'] },
+            { symbol: '/i:/', category: 'long', sound: 'ee', example: 'sheep 🐑', word: 'sheep', words: ['sheep', 'evening', 'she', 'me', 'eat', 'meat', 'tea', 'bee', 'beef', 'feet'] },
             // 长元音 - /u:/
-            { symbol: '/u:/', sound: 'oo', example: 'moon 🌙', word: 'moon', words: ['moon', 'who', 'lose', 'move', 'zoo', 'goose', 'blue', 'glue', 'true'] },
+            { symbol: '/u:/', category: 'long', sound: 'oo', example: 'moon 🌙', word: 'moon', words: ['moon', 'who', 'lose', 'move', 'zoo', 'goose', 'blue', 'glue', 'true'] },
             
             // 短元音 - /ʌ/
-            { symbol: '/ʌ/', sound: 'u', example: 'cup ☕', word: 'cup', words: ['cup', 'cut', 'but', 'duck', 'come', 'love', 'mother'] },
+            { symbol: '/ʌ/', category: 'short', sound: 'u', example: 'cup ☕', word: 'cup', words: ['cup', 'cut', 'but', 'duck', 'come', 'love', 'mother'] },
             // 短元音 - /ɒ/
-            { symbol: '/ɒ/', sound: 'o', example: 'dog 🐕', word: 'dog', words: ['dog', 'hot', 'box'] },
+            { symbol: '/ɒ/', category: 'short', sound: 'o', example: 'dog 🐕', word: 'dog', words: ['dog', 'hot', 'box'] },
             // 短元音 - /ə/
-            { symbol: '/ə/', sound: 'a', example: 'sofa 🛋️', word: 'sofa', words: ['sofa', 'about', 'banana', 'ago', 'teacher', 'farmer', 'mother', 'doctor', 'actor', 'visitor'] },
+            { symbol: '/ə/', category: 'short', sound: 'a', example: 'sofa 🛋️', word: 'sofa', words: ['sofa', 'about', 'banana', 'ago', 'teacher', 'farmer', 'mother', 'doctor', 'actor', 'visitor'] },
             // 短元音 - /ɪ/
-            { symbol: '/ɪ/', sound: 'i', example: 'fish 🐟', word: 'fish', words: ['fish', 'it', 'miss', 'kiss', 'city', 'busy', 'Lily', 'decide', 'before', 'behind'] },
+            { symbol: '/ɪ/', category: 'short', sound: 'i', example: 'fish 🐟', word: 'fish', words: ['fish', 'it', 'miss', 'kiss', 'city', 'busy', 'Lily', 'decide', 'before', 'behind'] },
             // 短元音 - /ʊ/
-            { symbol: '/ʊ/', sound: 'u', example: 'book 📚', word: 'book', words: ['book', 'put', 'push', 'sugar', 'look', 'took', 'could', 'should', 'would'] },
+            { symbol: '/ʊ/', category: 'short', sound: 'u', example: 'book 📚', word: 'book', words: ['book', 'put', 'push', 'sugar', 'look', 'took', 'could', 'should', 'would'] },
             // 短元音 - /æ/
-            { symbol: '/æ/', sound: 'a', example: 'cat 🐱', word: 'cat', words: ['cat', 'fat', 'bad', 'apple', 'family', 'rabbit', 'happy'] },
+            { symbol: '/æ/', category: 'short', sound: 'a', example: 'cat 🐱', word: 'cat', words: ['cat', 'fat', 'bad', 'apple', 'family', 'rabbit', 'happy'] },
             // 短元音 - /e/
-            { symbol: '/e/', sound: 'e', example: 'bed 🛏️', word: 'bed', words: ['bed', 'egg', 'red', 'any', 'many', 'anyone', 'head', 'bread', 'ready'] },
+            { symbol: '/e/', category: 'short', sound: 'e', example: 'bed 🛏️', word: 'bed', words: ['bed', 'egg', 'red', 'any', 'many', 'anyone', 'head', 'bread', 'ready'] },
             
             // 双元音
-            { symbol: '/ɔɪ/', sound: 'oi', example: 'boy 👦', word: 'boy' },
-            { symbol: '/aɪ/', sound: 'ai', example: 'kite 🪁', word: 'kite' },
-            { symbol: '/əʊ/', sound: 'ou', example: 'boat ⛵', word: 'boat' },
-            { symbol: '/aʊ/', sound: 'au', example: 'cow 🐄', word: 'cow' },
-            { symbol: '/ɪə/', sound: 'ear', example: 'ear 👂', word: 'ear' },
-            { symbol: '/eɪ/', sound: 'ay', example: 'cake 🎂', word: 'cake' },
-            { symbol: '/eə/', sound: 'air', example: 'hair 💇', word: 'hair' },
-            { symbol: '/ʊə/', sound: 'ure', example: 'tour 🗺️', word: 'tour' }
+            { symbol: '/ɔɪ/', category: 'diphthong', sound: 'oi', example: 'boy 👦', word: 'boy', words: ['boy', 'toy', 'coin', 'noise'] },
+            { symbol: '/aɪ/', category: 'diphthong', sound: 'ai', example: 'kite 🪁', word: 'kite', words: ['kite', 'bike', 'five', 'nine'] },
+            { symbol: '/əʊ/', category: 'diphthong', sound: 'ou', example: 'boat ⛵', word: 'boat', words: ['boat', 'go', 'home', 'nose'] },
+            { symbol: '/aʊ/', category: 'diphthong', sound: 'au', example: 'cow 🐄', word: 'cow', words: ['cow', 'house', 'mouse', 'out'] },
+            { symbol: '/ɪə/', category: 'diphthong', sound: 'ear', example: 'ear 👂', word: 'ear', words: ['ear', 'dear', 'near', 'here'] },
+            { symbol: '/eɪ/', category: 'diphthong', sound: 'ay', example: 'cake 🎂', word: 'cake', words: ['cake', 'rain', 'train', 'day'] },
+            { symbol: '/eə/', category: 'diphthong', sound: 'air', example: 'hair 💇', word: 'hair', words: ['hair', 'bear', 'chair', 'pear'] },
+            { symbol: '/ʊə/', category: 'diphthong', sound: 'ure', example: 'tour 🗺️', word: 'tour', words: ['tour', 'sure', 'cure', 'pure'] },
+
+            // 辅音 - 爆破音
+            { symbol: '/p/', category: 'plosive', sound: 'p', example: 'pig 🐷', word: 'pig', words: ['pig', 'pen', 'pet'] },
+            { symbol: '/t/', category: 'plosive', sound: 't', example: 'sit 🪑', word: 'sit', words: ['sit', 'butter', 'tiger'] },
+            { symbol: '/k/', category: 'plosive', sound: 'k', example: 'keep 🔑', word: 'keep', words: ['keep', 'lock', 'cat', 'cup', 'card', 'key', 'like', 'desk', 'clock', 'mock', 'ache', 'echo', 'Christmas'] },
+            { symbol: '/b/', category: 'plosive', sound: 'b', example: 'big 🐘', word: 'big', words: ['big', 'bat', 'box'] },
+            { symbol: '/d/', category: 'plosive', sound: 'd', example: 'desk 🪑', word: 'desk', words: ['deep', 'dark', 'desk'] },
+            { symbol: '/g/', category: 'plosive', sound: 'g', example: 'good 👍', word: 'good', words: ['good', 'get', 'egg'] },
+
+            // 辅音 - 摩擦音
+            { symbol: '/f/', category: 'fricative', sound: 'f', example: 'fish 🐟', word: 'fish', words: ['fat', 'five', 'life', 'photo', 'phone', 'dolphin', 'elephant', 'telephone', 'four', 'fish'] },
+            { symbol: '/v/', category: 'fricative', sound: 'v', example: 'very 🙂', word: 'very', words: ['have', 'river', 'very'] },
+            { symbol: '/s/', category: 'fricative', sound: 's', example: 'small 🐭', word: 'small', words: ['small', 'size', 'ask', 'face', 'race', 'rice', 'circle'] },
+            { symbol: '/z/', category: 'fricative', sound: 'z', example: 'zoo 🦁', word: 'zoo', words: ['zero', 'zebra', 'zoo', 'nose', 'rose', 'praise'] },
+            { symbol: '/ʃ/', category: 'fricative', sound: 'sh', example: 'fish 🐟', word: 'fish', words: ['fish'] },
+            { symbol: '/ʒ/', category: 'fricative', sound: 'zh', example: 'vision 📺', word: 'vision', words: ['decision', 'Asia', 'vision', 'television', 'measure', 'pleasure', 'usually'] },
+            { symbol: '/θ/', category: 'fricative', sound: 'th', example: 'three 3️⃣', word: 'three', words: ['three', 'math', 'path'] },
+            { symbol: '/ð/', category: 'fricative', sound: 'th', example: 'this 👉', word: 'this', words: ['this', 'these', 'mother'] },
+            { symbol: '/h/', category: 'fricative', sound: 'h', example: 'how ❓', word: 'how', words: ['how', 'hut', 'hide', 'who', 'whole', 'whoever'] },
+            { symbol: '/r/', category: 'fricative', sound: 'r', example: 'red 🔴', word: 'red', words: ['red', 'read', 'rise', 'rose', 'write', 'wrap', 'wrist', 'wrong'] },
+
+            // 辅音 - 鼻音
+            { symbol: '/m/', category: 'nasal', sound: 'm', example: 'May 🌸', word: 'May', words: ['May', 'March', 'aim'] },
+            { symbol: '/n/', category: 'nasal', sound: 'n', example: 'night 🌙', word: 'night', words: ['night', 'kind', 'green', 'know', 'knight', 'knock'] },
+            { symbol: '/ŋ/', category: 'nasal', sound: 'ng', example: 'song 🎵', word: 'song', words: ['think', 'bank', 'tank', 'long', 'song', 'ring', 'finger'] },
+
+            // 辅音 - 舌边音
+            { symbol: '/l/', category: 'lateral', sound: 'l', example: 'like 👍', word: 'like', words: ['label', 'letter', 'like', 'lose', 'lucky', 'please', 'allow', 'world', 'girl', 'sale', 'feel', 'while', 'boil'] },
+
+            // 辅音 - 半元音
+            { symbol: '/w/', category: 'semivowel', sound: 'w', example: 'wish ✨', word: 'wish', words: ['wish', 'work', 'water', 'when', 'where', 'what'] },
+            { symbol: '/j/', category: 'semivowel', sound: 'y', example: 'yes ✅', word: 'yes', words: ['you', 'yes', 'yellow'] },
+
+            // 辅音 - 破擦音
+            { symbol: '/tr/', category: 'affricate', sound: 'tr', example: 'tree 🌳', word: 'tree', words: ['tree', 'try', 'true'] },
+            { symbol: '/dr/', category: 'affricate', sound: 'dr', example: 'dream 💭', word: 'dream', words: ['dry', 'dream', 'draw'] },
+            { symbol: '/tʃ/', category: 'affricate', sound: 'ch', example: 'chat 💬', word: 'chat', words: ['chat', 'China', 'Chinese', 'teach'] },
+            { symbol: '/dʒ/', category: 'affricate', sound: 'j', example: 'job 💼', word: 'job', words: ['job', 'juice', 'joke', 'jeans', 'age', 'cabbage', 'message', 'fridge', 'bridge', 'judge'] },
+            { symbol: '/ts/', category: 'affricate', sound: 'ts', example: 'fruits 🍓', word: 'fruits', words: ['fruits', 'hats', 'robots', 'shorts', 'gifts'] },
+            { symbol: '/dz/', category: 'affricate', sound: 'dz', example: 'cards 🃏', word: 'cards', words: ['cards', 'sends', 'beds', 'reads', 'rides'] }
         ];
 
         const bubbleColors = [
@@ -913,6 +1031,90 @@
             'linear-gradient(135deg, #5f27cd, #341f97)',
             'linear-gradient(135deg, #00d2d3, #01a3a4)'
         ];
+
+        const rangeLabels = {
+            long: '长元音',
+            short: '短元音',
+            diphthong: '双元音',
+            plosive: '爆破音',
+            fricative: '摩擦音',
+            nasal: '鼻音',
+            lateral: '舌边音',
+            semivowel: '半元音',
+            affricate: '破擦音'
+        };
+        const rangeOrder = ['long', 'short', 'diphthong', 'plosive', 'fricative', 'nasal', 'lateral', 'semivowel', 'affricate'];
+        let activeRanges = new Set(rangeOrder);
+
+        function getActivePhonetics(options = {}) {
+            const { requireWords = false, minWords = 0 } = options;
+            const pool = phonetics.filter(p => activeRanges.has(p.category));
+            if (!requireWords) return pool;
+            return pool.filter(p => Array.isArray(p.words) && p.words.length >= minWords);
+        }
+
+        function updateRangeHint(message = '') {
+            const hint = document.getElementById('range-hint');
+            if (!hint) return;
+            if (message) {
+                hint.textContent = message;
+                hint.classList.add('warn');
+                return;
+            }
+            const labels = rangeOrder.filter(r => activeRanges.has(r)).map(r => rangeLabels[r]);
+            hint.textContent = `已选择: ${labels.join('、')}（切换会重置当前局）`;
+            hint.classList.remove('warn');
+        }
+
+        function showRangeWarning(message) {
+            updateRangeHint(message);
+            setTimeout(() => updateRangeHint(), 1500);
+        }
+
+        function toggleRange(button) {
+            const range = button.dataset.range;
+            if (!rangeLabels[range]) return;
+
+            if (activeRanges.has(range)) {
+                if (activeRanges.size === 1) {
+                    showRangeWarning('至少选择一个范围');
+                    return;
+                }
+                activeRanges.delete(range);
+                button.classList.remove('active');
+                button.setAttribute('aria-pressed', 'false');
+            } else {
+                activeRanges.add(range);
+                button.classList.add('active');
+                button.setAttribute('aria-pressed', 'true');
+            }
+
+            updateRangeHint();
+            resetGamesForRangeChange();
+        }
+
+        function resetGamesForRangeChange() {
+            stopBubbleGame();
+            document.querySelectorAll('.bubble').forEach(b => b.remove());
+            bubbles = [];
+            bubbleScore = 0;
+            bubbleLevel = 1;
+            lives = 3;
+            combo = 0;
+            waitingForNextRound = false;
+            targetPhonetic = null;
+            document.getElementById('bubble-score').textContent = '0';
+            document.getElementById('bubble-level').textContent = '1';
+            document.querySelectorAll('.life').forEach(l => l.style.opacity = '1');
+            const targetDisplay = document.getElementById('target-display');
+            if (targetDisplay) {
+                targetDisplay.textContent = '点击开始';
+                targetDisplay.classList.remove('playing');
+            }
+
+            initMatchGame();
+            initEliminateGame();
+        }
 
         // ============ 游戏切换 ============
         function switchGame(index) {
@@ -982,6 +1184,12 @@
         let waitingForNextRound = false;
 
         function startBubbleGame() {
+            const pool = getActivePhonetics();
+            if (pool.length < 3) {
+                showRangeWarning('当前范围不足以开始泡泡龙');
+                return;
+            }
+
             bubbleGameActive = true;
             bubbleScore = 0;
             bubbleLevel = 1;
@@ -1012,7 +1220,14 @@
             if (!bubbleGameActive || waitingForNextRound) return;
             
             waitingForNextRound = true;
-            targetPhonetic = phonetics[Math.floor(Math.random() * phonetics.length)];
+            const pool = getActivePhonetics();
+            if (pool.length < 3) {
+                stopBubbleGame();
+                showRangeWarning('当前范围不足以开始泡泡龙');
+                waitingForNextRound = false;
+                return;
+            }
+            targetPhonetic = pool[Math.floor(Math.random() * pool.length)];
             
             // 随机选择一个要播放的单词
             let wordToPlay = targetPhonetic.word;
@@ -1045,7 +1260,8 @@
             const gap = (gameWidth - bubbleWidth * 3) / 4;
             
             // 选择两个干扰音标
-            const distractors = phonetics
+            const pool = getActivePhonetics();
+            const distractors = pool
                 .filter(p => p.symbol !== targetPhonetic.symbol)
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 2);
@@ -1206,7 +1422,7 @@
         let matchStreak = 0;
         let selectedItem = null;
         let matchedPairs = 0;
-        let totalPairs = 6;
+        let totalPairs = 0;
 
         function initMatchGame() {
             matchScore = 0;
@@ -1218,16 +1434,24 @@
             document.getElementById('match-streak').textContent = '0';
             document.getElementById('match-progress').style.width = '0%';
             
-            // 随机选择6个音标
-            const shuffled = [...phonetics].sort(() => Math.random() - 0.5).slice(0, 6);
-            const phoneticItems = [...shuffled].sort(() => Math.random() - 0.5);
-            const wordItems = [...shuffled].sort(() => Math.random() - 0.5);
-            
+            // 随机选择音标（最多6对）
+            const pool = getActivePhonetics();
+            totalPairs = Math.min(6, pool.length);
+
             const phoneticColumn = document.getElementById('phonetic-column');
             const wordColumn = document.getElementById('word-column');
-            
+
             phoneticColumn.innerHTML = '';
             wordColumn.innerHTML = '';
+
+            if (totalPairs === 0) {
+                phoneticColumn.innerHTML = '<div class="empty-state">当前范围没有可用音标</div>';
+                return;
+            }
+
+            const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, totalPairs);
+            const phoneticItems = [...shuffled].sort(() => Math.random() - 0.5);
+            const wordItems = [...shuffled].sort(() => Math.random() - 0.5);
             
             phoneticItems.forEach((p, i) => {
                 const item = document.createElement('div');
@@ -1283,7 +1507,8 @@
                     
                     document.getElementById('match-score').textContent = matchScore;
                     document.getElementById('match-streak').textContent = matchStreak;
-                    document.getElementById('match-progress').style.width = (matchedPairs / totalPairs * 100) + '%';
+                    document.getElementById('match-progress').style.width = 
+                        (totalPairs > 0 ? (matchedPairs / totalPairs * 100) : 0) + '%';
                     
                     createParticles(item);
                     
@@ -1321,7 +1546,7 @@
         let eliminateCards = [];
         let eliminateSelectedCard = null;
         let eliminateMatchedPairs = 0;
-        let eliminateTotalPairs = 10;
+        let eliminateTotalPairs = 0;
         let currentEliminateWord = null;
 
         function initEliminateGame() {
@@ -1333,17 +1558,26 @@
             updateEliminateSpeakButton();
             
             document.getElementById('eliminate-score').textContent = '0';
-            document.getElementById('eliminate-remaining').textContent = '20';
+            document.getElementById('eliminate-remaining').textContent = '0';
             document.getElementById('eliminate-progress').style.width = '0%';
             
             const grid = document.getElementById('eliminate-grid');
             grid.innerHTML = '';
             
-            // 选择10个音标，每个音标配两个单词
-            const selectedPhonetics = [...phonetics]
-                .filter(p => p.words && p.words.length >= 2)
+            // 选择音标，每个音标配两个单词（最多10对）
+            const pool = getActivePhonetics({ requireWords: true, minWords: 2 });
+            eliminateTotalPairs = Math.min(10, pool.length);
+
+            if (eliminateTotalPairs === 0) {
+                grid.innerHTML = '<div class="empty-state">当前范围没有可用单词</div>';
+                return;
+            }
+
+            document.getElementById('eliminate-remaining').textContent = String(eliminateTotalPairs * 2);
+
+            const selectedPhonetics = [...pool]
                 .sort(() => Math.random() - 0.5)
-                .slice(0, 10);
+                .slice(0, eliminateTotalPairs);
             
             const cardData = [];
             
@@ -1419,12 +1653,12 @@
                     
                     eliminateScore += 20;
                     eliminateMatchedPairs++;
-                    const remaining = 20 - eliminateMatchedPairs * 2;
+                    const remaining = eliminateTotalPairs * 2 - eliminateMatchedPairs * 2;
                     
                     document.getElementById('eliminate-score').textContent = eliminateScore;
                     document.getElementById('eliminate-remaining').textContent = remaining;
                     document.getElementById('eliminate-progress').style.width = 
-                        (eliminateMatchedPairs / eliminateTotalPairs * 100) + '%';
+                        (eliminateTotalPairs > 0 ? (eliminateMatchedPairs / eliminateTotalPairs * 100) : 0) + '%';
                     
                     // 延迟后隐藏卡片
                     setTimeout(() => {
@@ -1535,7 +1769,11 @@
                 'book': '📚', 'put': '👇', 'push': '🚪', 'sugar': '🍬', 'look': '👀', 'took': '🤲', 'could': '✅', 'should': '💡', 'would': '🤔',
                 'cat': '🐱', 'fat': '🍔', 'bad': '👎', 'apple': '🍎', 'family': '👨‍👩‍👧‍👦', 'rabbit': '🐰', 'happy': '😊',
                 'bed': '🛏️', 'egg': '🥚', 'red': '🔴', 'any': '❓', 'many': '📊', 'anyone': '👤', 'head': '😀', 'bread': '🍞', 'ready': '✅',
-                'boy': '👦', 'kite': '🪁', 'boat': '⛵', 'cow': '🐄', 'ear': '👂', 'cake': '🎂', 'hair': '💇', 'tour': '🗺️'
+                'boy': '👦', 'kite': '🪁', 'boat': '⛵', 'cow': '🐄', 'ear': '👂', 'cake': '🎂', 'hair': '💇', 'tour': '🗺️',
+                'toy': '🧸', 'coin': '🪙', 'noise': '🔊', 'bike': '🚲', 'five': '5️⃣', 'nine': '9️⃣', 'go': '🏃',
+                'home': '🏠', 'nose': '👃', 'house': '🏠', 'mouse': '🐭', 'out': '🚪', 'dear': '💌', 'near': '📍',
+                'here': '📍', 'rain': '🌧️', 'train': '🚆', 'day': '🌞', 'bear': '🐻', 'chair': '🪑', 'pear': '🍐',
+                'sure': '✅', 'cure': '💊', 'pure': '💧'
             };
             return emojiMap[word] || '📖';
         }
@@ -1623,6 +1861,7 @@
         });
 
         // 初始化
+        updateRangeHint();
         initMatchGame();
         initEliminateGame();
     </script>
