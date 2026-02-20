@@ -123,19 +123,20 @@
 
         /* 音标范围选择 */
         .range-panel {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.92);
             border-radius: 20px;
-            padding: 16px 20px;
+            padding: 12px 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            margin: 0 auto 25px;
-            max-width: 760px;
+            margin: 0;
             text-align: center;
+            flex: 2 1 520px;
+            min-width: 320px;
         }
 
         .range-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #5f27cd;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
@@ -147,12 +148,12 @@
         }
 
         .range-btn {
-            padding: 10px 22px;
+            padding: 8px 18px;
             border-radius: 30px;
             border: 2px solid transparent;
             background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
             color: #555;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: inherit;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -167,8 +168,8 @@
         }
 
         .range-hint {
-            margin-top: 8px;
-            font-size: 0.9rem;
+            margin-top: 6px;
+            font-size: 0.85rem;
             color: #666;
         }
 
@@ -178,31 +179,33 @@
 
         .status-panel {
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 16px;
+            flex-wrap: nowrap;
             justify-content: center;
-            margin: 0 auto 25px;
-            max-width: 980px;
+            align-items: stretch;
+            margin: 0 auto 22px;
+            max-width: 1200px;
         }
 
         .mascot-panel,
         .mission-panel {
             background: rgba(255,255,255,0.92);
             border-radius: 20px;
-            padding: 16px 18px;
+            padding: 14px 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            flex: 1 1 320px;
+            flex: 1 1 280px;
+            min-width: 260px;
         }
 
         .mascot-header {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             align-items: center;
         }
 
         .egg {
-            width: 110px;
-            height: 140px;
+            width: 90px;
+            height: 115px;
             background: var(--egg-main);
             border-radius: 55% 55% 50% 50%;
             position: relative;
@@ -213,45 +216,45 @@
         .egg::before {
             content: '';
             position: absolute;
-            width: 46px;
-            height: 46px;
+            width: 36px;
+            height: 36px;
             background: var(--egg-spot);
             border-radius: 50%;
-            top: 18px;
-            left: 16px;
+            top: 14px;
+            left: 12px;
             opacity: 0.9;
         }
 
         .egg-eye {
-            width: 10px;
-            height: 14px;
+            width: 9px;
+            height: 12px;
             background: var(--egg-eye);
             border-radius: 50%;
             position: absolute;
-            top: 56px;
+            top: 46px;
         }
 
-        .egg-eye.left { left: 32px; }
-        .egg-eye.right { right: 32px; }
+        .egg-eye.left { left: 25px; }
+        .egg-eye.right { right: 25px; }
 
         .egg-mouth {
             position: absolute;
-            width: 18px;
-            height: 8px;
+            width: 16px;
+            height: 7px;
             background: var(--egg-outline);
             border-radius: 0 0 12px 12px;
-            top: 78px;
+            top: 62px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .egg-cheek {
             position: absolute;
-            width: 16px;
-            height: 10px;
+            width: 14px;
+            height: 9px;
             background: var(--egg-cheek);
             border-radius: 50%;
-            top: 72px;
+            top: 58px;
             opacity: 0.8;
         }
 
@@ -265,7 +268,7 @@
         }
 
         .mascot-name {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #5f27cd;
             font-weight: 700;
         }
@@ -310,14 +313,14 @@
         }
 
         .mission-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #5f27cd;
             font-weight: 700;
             margin-bottom: 6px;
         }
 
         .mission-desc {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #333;
             margin-bottom: 10px;
         }
@@ -345,14 +348,14 @@
         }
 
         .mission-count {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
             min-width: 120px;
             text-align: right;
         }
 
         .mission-reward {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #555;
         }
 
@@ -876,6 +879,7 @@
 
             .status-panel {
                 margin-bottom: 15px;
+                flex-wrap: wrap;
             }
 
             .nav-btn {
@@ -916,6 +920,12 @@
                 width: 55px;
                 height: 55px;
                 font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .status-panel {
+                flex-wrap: wrap;
             }
         }
 
@@ -1013,22 +1023,6 @@
             <button class="nav-btn" onclick="switchGame(2)">✨ 消消乐</button>
         </div>
 
-        <div class="range-panel">
-            <div class="range-title">音标范围</div>
-            <div class="range-options">
-                <button class="range-btn active" data-range="long" aria-pressed="true" onclick="toggleRange(this)">长元音</button>
-                <button class="range-btn active" data-range="short" aria-pressed="true" onclick="toggleRange(this)">短元音</button>
-                <button class="range-btn active" data-range="diphthong" aria-pressed="true" onclick="toggleRange(this)">双元音</button>
-                <button class="range-btn active" data-range="plosive" aria-pressed="true" onclick="toggleRange(this)">爆破音</button>
-                <button class="range-btn active" data-range="fricative" aria-pressed="true" onclick="toggleRange(this)">摩擦音</button>
-                <button class="range-btn active" data-range="nasal" aria-pressed="true" onclick="toggleRange(this)">鼻音</button>
-                <button class="range-btn active" data-range="lateral" aria-pressed="true" onclick="toggleRange(this)">舌边音</button>
-                <button class="range-btn active" data-range="semivowel" aria-pressed="true" onclick="toggleRange(this)">半元音</button>
-                <button class="range-btn active" data-range="affricate" aria-pressed="true" onclick="toggleRange(this)">破擦音</button>
-            </div>
-            <div class="range-hint" id="range-hint">已选择: 长元音、短元音、双元音、爆破音、摩擦音、鼻音、舌边音、半元音、破擦音（切换会重置当前局）</div>
-        </div>
-
         <div class="status-panel">
             <div class="mascot-panel">
                 <div class="mascot-header">
@@ -1046,6 +1040,21 @@
                 </div>
                 <div class="skin-list" id="skin-list"></div>
                 <div class="skin-hint" id="skin-hint">累计星星解锁新皮肤</div>
+            </div>
+            <div class="range-panel">
+                <div class="range-title">音标范围</div>
+                <div class="range-options">
+                    <button class="range-btn active" data-range="long" aria-pressed="true" onclick="toggleRange(this)">长元音</button>
+                    <button class="range-btn active" data-range="short" aria-pressed="true" onclick="toggleRange(this)">短元音</button>
+                    <button class="range-btn active" data-range="diphthong" aria-pressed="true" onclick="toggleRange(this)">双元音</button>
+                    <button class="range-btn active" data-range="plosive" aria-pressed="true" onclick="toggleRange(this)">爆破音</button>
+                    <button class="range-btn active" data-range="fricative" aria-pressed="true" onclick="toggleRange(this)">摩擦音</button>
+                    <button class="range-btn active" data-range="nasal" aria-pressed="true" onclick="toggleRange(this)">鼻音</button>
+                    <button class="range-btn active" data-range="lateral" aria-pressed="true" onclick="toggleRange(this)">舌边音</button>
+                    <button class="range-btn active" data-range="semivowel" aria-pressed="true" onclick="toggleRange(this)">半元音</button>
+                    <button class="range-btn active" data-range="affricate" aria-pressed="true" onclick="toggleRange(this)">破擦音</button>
+                </div>
+                <div class="range-hint" id="range-hint">已选择: 长元音、短元音、双元音、爆破音、摩擦音、鼻音、舌边音、半元音、破擦音（切换会重置当前局）</div>
             </div>
             <div class="mission-panel" id="mission-panel">
                 <div class="mission-title">本局任务</div>
