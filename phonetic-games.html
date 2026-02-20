@@ -12,6 +12,14 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --egg-main: #fff1d6;
+            --egg-spot: #ffe0b2;
+            --egg-outline: #3b2f2f;
+            --egg-eye: #3b2f2f;
+            --egg-cheek: #ff8fab;
+        }
+
         body {
             font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -166,6 +174,191 @@
 
         .range-hint.warn {
             color: #ff6b6b;
+        }
+
+        .status-panel {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0 auto 25px;
+            max-width: 980px;
+        }
+
+        .mascot-panel,
+        .mission-panel {
+            background: rgba(255,255,255,0.92);
+            border-radius: 20px;
+            padding: 16px 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            flex: 1 1 320px;
+        }
+
+        .mascot-header {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .egg {
+            width: 110px;
+            height: 140px;
+            background: var(--egg-main);
+            border-radius: 55% 55% 50% 50%;
+            position: relative;
+            border: 4px solid var(--egg-outline);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .egg::before {
+            content: '';
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            background: var(--egg-spot);
+            border-radius: 50%;
+            top: 18px;
+            left: 16px;
+            opacity: 0.9;
+        }
+
+        .egg-eye {
+            width: 10px;
+            height: 14px;
+            background: var(--egg-eye);
+            border-radius: 50%;
+            position: absolute;
+            top: 56px;
+        }
+
+        .egg-eye.left { left: 32px; }
+        .egg-eye.right { right: 32px; }
+
+        .egg-mouth {
+            position: absolute;
+            width: 18px;
+            height: 8px;
+            background: var(--egg-outline);
+            border-radius: 0 0 12px 12px;
+            top: 78px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .egg-cheek {
+            position: absolute;
+            width: 16px;
+            height: 10px;
+            background: var(--egg-cheek);
+            border-radius: 50%;
+            top: 72px;
+            opacity: 0.8;
+        }
+
+        .egg-cheek.left { left: 18px; }
+        .egg-cheek.right { right: 18px; }
+
+        .mascot-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mascot-name {
+            font-size: 1.2rem;
+            color: #5f27cd;
+            font-weight: 700;
+        }
+
+        .mascot-stars {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .skin-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .skin-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            background: #f5f5f5;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .skin-btn.active {
+            background: #48dbfb;
+            color: white;
+            border-color: #0abde3;
+        }
+
+        .skin-btn.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skin-hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .mission-title {
+            font-size: 1.1rem;
+            color: #5f27cd;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .mission-desc {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .mission-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .mission-bar {
+            flex: 1;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .mission-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1dd1a1, #10ac84);
+            transition: width 0.3s ease;
+        }
+
+        .mission-count {
+            font-size: 0.9rem;
+            color: #666;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .mission-reward {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .mission-panel.completed .mission-desc {
+            color: #10ac84;
+            font-weight: 700;
         }
 
         /* 游戏区域 */
@@ -681,6 +874,10 @@
                 padding: 15px;
             }
 
+            .status-panel {
+                margin-bottom: 15px;
+            }
+
             .nav-btn {
                 padding: 12px 20px;
                 font-size: 0.9rem;
@@ -830,6 +1027,37 @@
                 <button class="range-btn active" data-range="affricate" aria-pressed="true" onclick="toggleRange(this)">破擦音</button>
             </div>
             <div class="range-hint" id="range-hint">已选择: 长元音、短元音、双元音、爆破音、摩擦音、鼻音、舌边音、半元音、破擦音（切换会重置当前局）</div>
+        </div>
+
+        <div class="status-panel">
+            <div class="mascot-panel">
+                <div class="mascot-header">
+                    <div class="egg" id="egg">
+                        <div class="egg-eye left"></div>
+                        <div class="egg-eye right"></div>
+                        <div class="egg-mouth"></div>
+                        <div class="egg-cheek left"></div>
+                        <div class="egg-cheek right"></div>
+                    </div>
+                    <div class="mascot-info">
+                        <div class="mascot-name" id="mascot-name">原味蛋仔</div>
+                        <div class="mascot-stars">星星: <span id="star-count">0</span> ⭐</div>
+                    </div>
+                </div>
+                <div class="skin-list" id="skin-list"></div>
+                <div class="skin-hint" id="skin-hint">累计星星解锁新皮肤</div>
+            </div>
+            <div class="mission-panel" id="mission-panel">
+                <div class="mission-title">本局任务</div>
+                <div class="mission-desc" id="mission-desc">准备开始</div>
+                <div class="mission-progress">
+                    <div class="mission-bar">
+                        <div class="mission-fill" id="mission-fill"></div>
+                    </div>
+                    <div class="mission-count" id="mission-count">0/0</div>
+                </div>
+                <div class="mission-reward">完成奖励: <span id="mission-stars">0</span> ⭐</div>
+            </div>
         </div>
 
         <div class="game-area">
@@ -1046,6 +1274,59 @@
         const rangeOrder = ['long', 'short', 'diphthong', 'plosive', 'fricative', 'nasal', 'lateral', 'semivowel', 'affricate'];
         let activeRanges = new Set(rangeOrder);
 
+        const skins = [
+            {
+                id: 'classic',
+                name: '原味蛋仔',
+                threshold: 0,
+                colors: { main: '#fff1d6', spot: '#ffe0b2', outline: '#3b2f2f', cheek: '#ff8fab' }
+            },
+            {
+                id: 'sky',
+                name: '天空蛋仔',
+                threshold: 6,
+                colors: { main: '#e0f7ff', spot: '#b3e5ff', outline: '#1f3c88', cheek: '#ff9aa2' }
+            },
+            {
+                id: 'forest',
+                name: '森林蛋仔',
+                threshold: 12,
+                colors: { main: '#e9f7e1', spot: '#c5e8b7', outline: '#2f6b4f', cheek: '#ffb3c1' }
+            },
+            {
+                id: 'sunset',
+                name: '落日蛋仔',
+                threshold: 20,
+                colors: { main: '#ffe0cc', spot: '#ffc2a1', outline: '#7a3e1f', cheek: '#ff7b7b' }
+            }
+        ];
+
+        let starCount = 0;
+        let currentSkinId = 'classic';
+
+        const missionTemplates = {
+            bubble: [
+                { type: 'combo', target: 10, reward: 3, desc: '连对10次' },
+                { type: 'speed_correct', target: 3, seconds: 10, reward: 3, desc: '10秒内点对3个' },
+                { type: 'score', target: 120, reward: 2, desc: '得分达到120' }
+            ],
+            match: [
+                { type: 'streak', target: 6, reward: 3, desc: '连对6次' },
+                { type: 'speed_pairs', target: 3, seconds: 20, reward: 3, desc: '20秒内配对3对' },
+                { type: 'score', target: 150, reward: 2, desc: '得分达到150' }
+            ],
+            eliminate: [
+                { type: 'pairs', target: 5, reward: 3, desc: '消除5对' },
+                { type: 'speed_pairs', target: 3, seconds: 25, reward: 3, desc: '25秒内消除3对' },
+                { type: 'score', target: 160, reward: 2, desc: '得分达到160' }
+            ]
+        };
+        const missionStates = { bubble: null, match: null, eliminate: null };
+        let missionState = null;
+        let missionTicker = null;
+        const gameKeys = ['bubble', 'match', 'eliminate'];
+        let activeGameKey = 'bubble';
+
         function getActivePhonetics(options = {}) {
             const { requireWords = false, minWords = 0 } = options;
             const pool = phonetics.filter(p => activeRanges.has(p.category));
@@ -1114,6 +1395,230 @@
 
             initMatchGame();
             initEliminateGame();
+            setActiveMission(activeGameKey);
+        }
+
+        function isGameActive(gameId) {
+            const el = document.getElementById(gameId);
+            return el && el.classList.contains('active');
+        }
+
+        function loadProgress() {
+            try {
+                const savedStars = Number(localStorage.getItem('eggStars'));
+                const savedSkin = localStorage.getItem('eggSkin');
+                if (!Number.isNaN(savedStars)) starCount = savedStars;
+                if (savedSkin) currentSkinId = savedSkin;
+            } catch (e) {
+                starCount = 0;
+                currentSkinId = 'classic';
+            }
+            if (!isSkinUnlocked(currentSkinId)) {
+                currentSkinId = 'classic';
+            }
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem('eggStars', String(starCount));
+                localStorage.setItem('eggSkin', currentSkinId);
+            } catch (e) {
+                // ignore storage failures
+            }
+        }
+
+        function isSkinUnlocked(id) {
+            const skin = skins.find(s => s.id === id);
+            if (!skin) return false;
+            return starCount >= skin.threshold;
+        }
+
+        function applySkin(id) {
+            const skin = skins.find(s => s.id === id);
+            if (!skin) return;
+            currentSkinId = skin.id;
+            const root = document.documentElement;
+            root.style.setProperty('--egg-main', skin.colors.main);
+            root.style.setProperty('--egg-spot', skin.colors.spot);
+            root.style.setProperty('--egg-outline', skin.colors.outline);
+            root.style.setProperty('--egg-eye', skin.colors.outline);
+            root.style.setProperty('--egg-cheek', skin.colors.cheek);
+            document.getElementById('mascot-name').textContent = skin.name;
+            renderSkinList();
+            saveProgress();
+        }
+
+        function updateStarUI() {
+            const starEl = document.getElementById('star-count');
+            if (starEl) starEl.textContent = starCount;
+        }
+
+        function renderSkinList() {
+            const list = document.getElementById('skin-list');
+            if (!list) return;
+            list.innerHTML = '';
+            skins.forEach(skin => {
+                const btn = document.createElement('button');
+                btn.className = 'skin-btn';
+                const unlocked = isSkinUnlocked(skin.id);
+                if (!unlocked) btn.classList.add('locked');
+                if (skin.id === currentSkinId) btn.classList.add('active');
+                btn.textContent = skin.name;
+                btn.title = unlocked ? '点击使用' : `需要${skin.threshold}星`;
+                btn.onclick = () => {
+                    if (!unlocked) {
+                        showSkinHint(`还差 ${skin.threshold - starCount} 星解锁`);
+                        return;
+                    }
+                    applySkin(skin.id);
+                    showSkinHint(`已切换到 ${skin.name}`);
+                };
+                list.appendChild(btn);
+            });
+        }
+
+        function showSkinHint(message) {
+            const hint = document.getElementById('skin-hint');
+            if (!hint) return;
+            hint.textContent = message;
+            setTimeout(() => {
+                hint.textContent = '累计星星解锁新皮肤';
+            }, 1500);
+        }
+
+        function addStars(amount) {
+            if (!amount) return;
+            const before = starCount;
+            starCount += amount;
+            updateStarUI();
+            saveProgress();
+
+            const newlyUnlocked = skins.filter(s => s.threshold > before && s.threshold <= starCount);
+            if (newlyUnlocked.length > 0) {
+                showSkinHint(`解锁 ${newlyUnlocked.map(s => s.name).join('、')}！`);
+                celebrate();
+            }
+            renderSkinList();
+        }
+
+        function clearMissionTicker() {
+            if (missionTicker) {
+                clearInterval(missionTicker);
+                missionTicker = null;
+            }
+        }
+
+        function startMission(gameKey) {
+            clearMissionTicker();
+            const templates = missionTemplates[gameKey] || [];
+            if (templates.length === 0) return;
+            const pick = templates[Math.floor(Math.random() * templates.length)];
+            missionState = {
+                ...pick,
+                gameKey,
+                progress: 0,
+                completed: false,
+                windowStart: null
+            };
+            missionStates[gameKey] = missionState;
+            const panel = document.getElementById('mission-panel');
+            if (panel) panel.classList.remove('completed');
+            if (missionState.type === 'speed_correct' || missionState.type === 'speed_pairs') {
+                missionTicker = setInterval(updateMissionUI, 200);
+            }
+            updateMissionUI();
+        }
+
+        function setActiveMission(gameKey) {
+            clearMissionTicker();
+            missionState = missionStates[gameKey];
+            if (!missionState) {
+                startMission(gameKey);
+                return;
+            }
+            const panel = document.getElementById('mission-panel');
+            if (panel) panel.classList.toggle('completed', missionState.completed);
+            if (missionState.type === 'speed_correct' || missionState.type === 'speed_pairs') {
+                missionTicker = setInterval(updateMissionUI, 200);
+            }
+            updateMissionUI();
+        }
+
+        function completeMission() {
+            if (!missionState || missionState.completed) return;
+            missionState.completed = true;
+            clearMissionTicker();
+            addStars(missionState.reward);
+            const panel = document.getElementById('mission-panel');
+            if (panel) panel.classList.add('completed');
+            updateMissionUI(true);
+        }
+
+        function updateMissionUI(forceComplete = false) {
+            if (!missionState) return;
+            const descEl = document.getElementById('mission-desc');
+            const countEl = document.getElementById('mission-count');
+            const fillEl = document.getElementById('mission-fill');
+            const rewardEl = document.getElementById('mission-stars');
+            const panel = document.getElementById('mission-panel');
+
+            let progress = 0;
+            let extra = '';
+
+            if (missionState.type === 'combo') progress = combo;
+            if (missionState.type === 'streak') progress = matchStreak;
+            if (missionState.type === 'pairs') progress = eliminateMatchedPairs;
+            if (missionState.type === 'score') {
+                if (missionState.gameKey === 'bubble') progress = bubbleScore;
+                if (missionState.gameKey === 'match') progress = matchScore;
+                if (missionState.gameKey === 'eliminate') progress = eliminateScore;
+            }
+
+            if (missionState.type === 'speed_correct' || missionState.type === 'speed_pairs') {
+                const now = Date.now();
+                if (missionState.windowStart) {
+                    const elapsed = (now - missionState.windowStart) / 1000;
+                    const left = Math.max(0, missionState.seconds - elapsed);
+                    if (left === 0) {
+                        missionState.windowStart = null;
+                        missionState.progress = 0;
+                        extra = '（超时，重来）';
+                    } else {
+                        extra = `（剩余${Math.ceil(left)}秒）`;
+                    }
+                } else {
+                    extra = '（等待开始）';
+                }
+                progress = missionState.progress;
+            }
+
+            if (descEl) {
+                descEl.textContent = missionState.completed ? '任务完成！' : missionState.desc;
+            }
+            if (countEl) countEl.textContent = `${progress}/${missionState.target}${extra}`;
+            if (rewardEl) rewardEl.textContent = missionState.reward;
+            if (fillEl) {
+                const percent = Math.min(100, Math.round((progress / missionState.target) * 100));
+                fillEl.style.width = `${percent}%`;
+            }
+            if (panel) panel.classList.toggle('completed', missionState.completed);
+
+            if ((progress >= missionState.target || forceComplete) && !missionState.completed) {
+                completeMission();
+            }
+        }
+
+        function recordSpeedProgress() {
+            if (!missionState || missionState.completed) return;
+            if (missionState.type !== 'speed_correct' && missionState.type !== 'speed_pairs') return;
+            const now = Date.now();
+            if (!missionState.windowStart || (now - missionState.windowStart) / 1000 > missionState.seconds) {
+                missionState.windowStart = now;
+                missionState.progress = 1;
+            } else {
+                missionState.progress += 1;
+            }
+            updateMissionUI();
         }
 
         // ============ 游戏切换 ============
@@ -1124,6 +1629,9 @@
             document.querySelectorAll('.game-section').forEach((section, i) => {
                 section.classList.toggle('active', i === index);
             });
+
+            activeGameKey = gameKeys[index] || 'bubble';
+            setActiveMission(activeGameKey);
             
             // 停止其他游戏
             if (index !== 0) stopBubbleGame();
@@ -1197,6 +1705,8 @@
             combo = 0;
             bubbles = [];
             waitingForNextRound = false;
+
+            startMission('bubble');
             
             document.getElementById('bubble-score').textContent = '0';
             document.getElementById('bubble-level').textContent = '1';
@@ -1315,6 +1825,7 @@
                 lives--;
                 updateLives();
                 combo = 0;
+                updateMissionUI();
                 document.getElementById('combo-display').textContent = '漏掉了！';
                 document.getElementById('combo-display').classList.add('show');
                 setTimeout(() => document.getElementById('combo-display').classList.remove('show'), 1000);
@@ -1353,6 +1864,8 @@
                 const points = 10 * (1 + Math.floor(combo / 3));
                 bubbleScore += points;
                 document.getElementById('bubble-score').textContent = bubbleScore;
+                updateMissionUI();
+                recordSpeedProgress();
                 
                 if (combo > 1) {
                     document.getElementById('combo-display').textContent = `${combo} 连击! +${points}`;
@@ -1387,6 +1900,7 @@
                 combo = 0;
                 bubbleScore = Math.max(0, bubbleScore - 5);
                 document.getElementById('bubble-score').textContent = bubbleScore;
+                updateMissionUI();
                 document.getElementById('combo-display').textContent = '选错了！';
                 document.getElementById('combo-display').classList.add('show');
                 setTimeout(() => document.getElementById('combo-display').classList.remove('show'), 1000);
@@ -1449,6 +1963,10 @@
                 return;
             }
 
+            if (isGameActive('game2')) {
+                startMission('match');
+            }
+
             const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, totalPairs);
             const phoneticItems = [...shuffled].sort(() => Math.random() - 0.5);
             const wordItems = [...shuffled].sort(() => Math.random() - 0.5);
@@ -1509,6 +2027,8 @@
                     document.getElementById('match-streak').textContent = matchStreak;
                     document.getElementById('match-progress').style.width = 
                         (totalPairs > 0 ? (matchedPairs / totalPairs * 100) : 0) + '%';
+                    updateMissionUI();
+                    recordSpeedProgress();
                     
                     createParticles(item);
                     
@@ -1527,6 +2047,7 @@
                     playError();
                     matchStreak = 0;
                     document.getElementById('match-streak').textContent = '0';
+                    updateMissionUI();
                     
                     setTimeout(() => {
                         item.classList.remove('wrong', 'selected');
@@ -1574,6 +2095,10 @@
             }
 
             document.getElementById('eliminate-remaining').textContent = String(eliminateTotalPairs * 2);
+
+            if (isGameActive('game3')) {
+                startMission('eliminate');
+            }
 
             const selectedPhonetics = [...pool]
                 .sort(() => Math.random() - 0.5)
@@ -1659,6 +2184,8 @@
                     document.getElementById('eliminate-remaining').textContent = remaining;
                     document.getElementById('eliminate-progress').style.width = 
                         (eliminateTotalPairs > 0 ? (eliminateMatchedPairs / eliminateTotalPairs * 100) : 0) + '%';
+                    updateMissionUI();
+                    recordSpeedProgress();
                     
                     // 延迟后隐藏卡片
                     setTimeout(() => {
@@ -1682,6 +2209,7 @@
                     document.getElementById('eliminate-score').textContent = eliminateScore;
                     currentEliminateWord = null;
                     updateEliminateSpeakButton();
+                    updateMissionUI();
                     
                     setTimeout(() => {
                         cardElement.classList.remove('wrong', 'selected');
@@ -1861,9 +2389,13 @@
         });
 
         // 初始化
+        loadProgress();
+        updateStarUI();
+        applySkin(currentSkinId);
         updateRangeHint();
         initMatchGame();
         initEliminateGame();
+        setActiveMission(activeGameKey);
     </script>
 </body>
 </html>
