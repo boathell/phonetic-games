@@ -125,35 +125,39 @@
         .range-panel {
             background: rgba(255,255,255,0.92);
             border-radius: 20px;
-            padding: 12px 16px;
+            padding: 12px 14px 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             margin: 0;
             text-align: center;
-            flex: 1.1 1 300px;
-            min-width: 260px;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         .range-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #5f27cd;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 700;
         }
 
         .range-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
             align-items: center;
         }
 
         .range-btn {
-            padding: 8px 18px;
+            padding: 7px 12px;
             border-radius: 30px;
             border: 2px solid transparent;
             background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
             color: #555;
-            font-size: 0.98rem;
+            font-size: 0.92rem;
+            font-weight: 700;
             font-family: inherit;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -169,9 +173,11 @@
         }
 
         .range-hint {
-            margin-top: 6px;
-            font-size: 0.9rem;
+            margin-top: 5px;
+            font-size: 0.82rem;
             color: #666;
+            line-height: 1.25;
+            min-height: 2.2em;
         }
 
         .range-hint.warn {
@@ -179,10 +185,9 @@
         }
 
         .status-panel {
-            display: flex;
-            gap: 16px;
-            flex-wrap: nowrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
             align-items: stretch;
             margin: 0 auto 22px;
             max-width: 1200px;
@@ -191,36 +196,49 @@
         .mascot-panel {
             background: rgba(255,255,255,0.92);
             border-radius: 20px;
-            padding: 14px 16px;
+            padding: 12px 14px 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            flex: 2.2 1 520px;
-            min-width: 320px;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mascot-top {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+            gap: 12px;
+            align-items: center;
+            min-height: 132px;
         }
 
         .mission-panel {
-            background: rgba(255,255,255,0.92);
-            border-radius: 20px;
-            padding: 14px 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            flex: 1.1 1 300px;
-            min-width: 260px;
+            background: rgba(255,255,255,0.75);
+            border-radius: 14px;
+            padding: 8px 10px;
+            border: 1px solid rgba(95,39,205,0.12);
+            min-width: 0;
+            align-self: stretch;
         }
 
         .mascot-header {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: center;
+            min-width: 0;
         }
 
         .egg {
-            width: 96px;
-            height: 122px;
+            width: 78px;
+            height: 98px;
             background: var(--egg-main);
             border-radius: 55% 55% 50% 50%;
             position: relative;
-            border: 4px solid var(--egg-outline);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border: 3px solid var(--egg-outline);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.18);
             overflow: visible;
+            margin-right: 6px;
+            flex-shrink: 0;
         }
 
         .egg::before {
@@ -239,11 +257,11 @@
             display: none;
             position: absolute;
             width: 12px;
-            height: 24px;
+            height: 20px;
             background: var(--egg-main);
             border: 3px solid var(--egg-outline);
             border-bottom: none;
-            top: -26px;
+            top: -18px;
             left: 50%;
             transform: translateX(-50%);
             border-radius: 10px 10px 0 0;
@@ -252,12 +270,12 @@
         .egg-antenna::after {
             content: '';
             position: absolute;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             background: var(--egg-main);
             border: 3px solid var(--egg-outline);
             border-radius: 50%;
-            top: -16px;
+            top: -14px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -265,22 +283,22 @@
         .egg-arm {
             display: none;
             position: absolute;
-            width: 42px;
-            height: 12px;
+            width: 30px;
+            height: 10px;
             background: var(--egg-main);
             border: 3px solid var(--egg-outline);
             border-radius: 999px;
-            top: 54px;
+            top: 50px;
             z-index: 1;
         }
 
         .egg-arm.left {
-            left: -32px;
+            left: -12px;
             transform: rotate(-10deg);
         }
 
         .egg-arm.right {
-            right: -32px;
+            right: -12px;
             transform: rotate(10deg);
         }
 
@@ -441,7 +459,7 @@
         }
 
         .egg[data-skin="despair"] .egg-arm {
-            top: 56px;
+            top: 52px;
         }
 
         .egg[data-skin="despair"] .egg-face {
@@ -576,33 +594,38 @@
         .mascot-info {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
+            min-width: 0;
+            padding-left: 4px;
+            position: relative;
+            z-index: 2;
         }
 
         .mascot-name {
-            font-size: 1.15rem;
+            font-size: 0.98rem;
             color: #5f27cd;
             font-weight: 700;
+            line-height: 1.2;
         }
 
         .mascot-stars {
-            font-size: 1rem;
+            font-size: 0.88rem;
             color: #555;
         }
 
         .skin-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
         }
 
         .skin-btn {
-            padding: 6px 12px;
+            padding: 5px 9px;
             border-radius: 16px;
             border: 2px solid transparent;
             background: #f5f5f5;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -619,29 +642,31 @@
         }
 
         .skin-hint {
-            margin-top: 8px;
-            font-size: 0.85rem;
+            margin-top: 6px;
+            font-size: 0.78rem;
             color: #666;
+            line-height: 1.2;
         }
 
         .mission-title {
-            font-size: 1.05rem;
+            font-size: 0.98rem;
             color: #5f27cd;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .mission-desc {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
+            line-height: 1.2;
         }
 
         .mission-progress {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
+            gap: 8px;
+            margin-bottom: 4px;
         }
 
         .mission-bar {
@@ -660,14 +685,14 @@
         }
 
         .mission-count {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #666;
-            min-width: 120px;
+            min-width: 84px;
             text-align: right;
         }
 
         .mission-reward {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #555;
         }
 
@@ -739,6 +764,27 @@
             padding: 10px 20px;
             border-radius: 25px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .bubble-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .bubble-header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .bubble-header-actions .control-btn {
+            padding: 9px 18px;
+            font-size: 0.92rem;
+            border-radius: 20px;
         }
 
         /* 泡泡龙游戏 */
@@ -1191,7 +1237,20 @@
 
             .status-panel {
                 margin-bottom: 15px;
-                flex-wrap: wrap;
+                grid-template-columns: 1fr;
+            }
+
+            .range-options {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .mascot-top {
+                grid-template-columns: 1fr;
+                min-height: 0;
+            }
+
+            .mission-panel {
+                margin-top: 2px;
             }
 
             .nav-btn {
@@ -1233,11 +1292,33 @@
                 height: 55px;
                 font-size: 1.2rem;
             }
+
+            .bubble-header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .bubble-header-actions {
+                justify-content: flex-start;
+            }
+
+            .bubble-header-actions .control-btn {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
         }
 
         @media (max-width: 1024px) {
             .status-panel {
-                flex-wrap: wrap;
+                grid-template-columns: 1fr;
+            }
+
+            .range-options {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .mascot-top {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1352,40 +1433,42 @@
                 <div class="range-hint" id="range-hint">已选择: 长元音、短元音、双元音、爆破音、摩擦音、鼻音、舌边音、半元音、破擦音（切换会重置当前局）</div>
             </div>
             <div class="mascot-panel">
-                <div class="mascot-header">
-                    <div class="egg" id="egg">
-                        <div class="egg-antenna"></div>
-                        <div class="egg-arm left"></div>
-                        <div class="egg-arm right"></div>
-                        <div class="egg-cap"></div>
-                        <div class="egg-face"></div>
-                        <div class="egg-eye left"></div>
-                        <div class="egg-eye right"></div>
-                        <div class="egg-mouth"></div>
-                        <div class="egg-cheek left"></div>
-                        <div class="egg-cheek right"></div>
-                        <div class="egg-tear"></div>
-                        <div class="egg-fin"></div>
-                        <div class="egg-fishbone"></div>
+                <div class="mascot-top">
+                    <div class="mascot-header">
+                        <div class="egg" id="egg">
+                            <div class="egg-antenna"></div>
+                            <div class="egg-arm left"></div>
+                            <div class="egg-arm right"></div>
+                            <div class="egg-cap"></div>
+                            <div class="egg-face"></div>
+                            <div class="egg-eye left"></div>
+                            <div class="egg-eye right"></div>
+                            <div class="egg-mouth"></div>
+                            <div class="egg-cheek left"></div>
+                            <div class="egg-cheek right"></div>
+                            <div class="egg-tear"></div>
+                            <div class="egg-fin"></div>
+                            <div class="egg-fishbone"></div>
+                        </div>
+                        <div class="mascot-info">
+                            <div class="mascot-name" id="mascot-name">原味蛋仔</div>
+                            <div class="mascot-stars">星星: <span id="star-count">0</span> ⭐</div>
+                        </div>
                     </div>
-                    <div class="mascot-info">
-                        <div class="mascot-name" id="mascot-name">原味蛋仔</div>
-                        <div class="mascot-stars">星星: <span id="star-count">0</span> ⭐</div>
+                    <div class="mission-panel" id="mission-panel">
+                        <div class="mission-title">本局任务</div>
+                        <div class="mission-desc" id="mission-desc">准备开始</div>
+                        <div class="mission-progress">
+                            <div class="mission-bar">
+                                <div class="mission-fill" id="mission-fill"></div>
+                            </div>
+                            <div class="mission-count" id="mission-count">0/0</div>
+                        </div>
+                        <div class="mission-reward">完成奖励: <span id="mission-stars">0</span> ⭐</div>
                     </div>
                 </div>
                 <div class="skin-list" id="skin-list"></div>
                 <div class="skin-hint" id="skin-hint">累计星星解锁新皮肤</div>
-            </div>
-            <div class="mission-panel" id="mission-panel">
-                <div class="mission-title">本局任务</div>
-                <div class="mission-desc" id="mission-desc">准备开始</div>
-                <div class="mission-progress">
-                    <div class="mission-bar">
-                        <div class="mission-fill" id="mission-fill"></div>
-                    </div>
-                    <div class="mission-count" id="mission-count">0/0</div>
-                </div>
-                <div class="mission-reward">完成奖励: <span id="mission-stars">0</span> ⭐</div>
             </div>
         </div>
 
@@ -1394,14 +1477,20 @@
             <div class="game-section active" id="game1">
                 <div class="game-header">
                     <h2 class="game-title">🫧 音标泡泡龙</h2>
-                    <div class="score-board">
-                        <div class="score-item">得分: <span id="bubble-score">0</span></div>
-                        <div class="score-item">等级: <span id="bubble-level">1</span></div>
+                    <div class="bubble-header-right">
+                        <div class="bubble-header-actions">
+                            <button class="control-btn start-btn" id="bubble-start" onclick="toggleBubbleGame()">开始游戏</button>
+                            <button class="control-btn sound-btn" onclick="playTargetSound()">🔊 再听一遍</button>
+                        </div>
+                        <div class="score-board">
+                            <div class="score-item">得分: <span id="bubble-score">0</span></div>
+                            <div class="score-item">等级: <span id="bubble-level">1</span></div>
+                        </div>
                     </div>
                 </div>
                 
                 <div id="bubble-game">
-                    <div class="target-display" id="target-display">点击开始</div>
+                    <div class="target-display" id="target-display">等待开始</div>
                     <div class="combo-display" id="combo-display"></div>
                     <div class="lives">
                         <span class="life">❤️</span>
@@ -1411,11 +1500,6 @@
                 </div>
                 
                 <p class="hint-text">听单词发音，从三个泡泡中找到正确的音标！点击正确得分，选错扣分，漏掉会扣生命值！</p>
-                
-                <div class="control-panel">
-                    <button class="control-btn start-btn" id="bubble-start" onclick="startBubbleGame()">开始游戏</button>
-                    <button class="control-btn sound-btn" onclick="playTargetSound()">🔊 再听一遍</button>
-                </div>
             </div>
 
             <!-- 游戏2: 连连看 -->
@@ -1771,7 +1855,7 @@
             document.querySelectorAll('.life').forEach(l => l.style.opacity = '1');
             const targetDisplay = document.getElementById('target-display');
             if (targetDisplay) {
-                targetDisplay.textContent = '点击开始';
+                targetDisplay.textContent = '等待开始';
                 targetDisplay.classList.remove('playing');
             }
 
@@ -2077,6 +2161,31 @@
         let lives = 3;
         let waitingForNextRound = false;
         const bubbleWinComboTarget = 10;
+        const bubbleReplayPauseMs = 1800;
+        let bubblePauseUntil = 0;
+
+        function setBubbleButtonState(isRunning) {
+            const startButton = document.getElementById('bubble-start');
+            if (!startButton) return;
+            startButton.textContent = isRunning ? '暂停游戏' : '开始游戏';
+            startButton.disabled = false;
+        }
+
+        function resetBubbleTargetDisplay() {
+            const targetDisplay = document.getElementById('target-display');
+            if (!targetDisplay) return;
+            targetDisplay.classList.remove('playing');
+            targetDisplay.textContent = '等待开始';
+            targetDisplay.style.fontFamily = "'Comic Neue', 'Nunito', sans-serif";
+        }
+
+        function toggleBubbleGame() {
+            if (bubbleGameActive) {
+                stopBubbleGame({ clearScene: true, resetDisplay: true });
+                return;
+            }
+            startBubbleGame();
+        }
 
         function startBubbleGame() {
             const pool = getActivePhonetics();
@@ -2092,13 +2201,14 @@
             combo = 0;
             bubbles = [];
             waitingForNextRound = false;
+            bubblePauseUntil = 0;
 
             startMission('bubble');
             
             document.getElementById('bubble-score').textContent = '0';
             document.getElementById('bubble-level').textContent = '1';
             document.querySelectorAll('.life').forEach(l => l.style.opacity = '1');
-            document.getElementById('bubble-start').disabled = true;
+            setBubbleButtonState(true);
             
             document.querySelectorAll('.bubble').forEach(b => b.remove());
             
@@ -2108,9 +2218,23 @@
             }, 500);
         }
 
-        function stopBubbleGame() {
+        function stopBubbleGame(options = {}) {
+            const { clearScene = false, resetDisplay = false } = options;
             bubbleGameActive = false;
-            document.getElementById('bubble-start').disabled = false;
+            waitingForNextRound = false;
+            bubblePauseUntil = 0;
+            setBubbleButtonState(false);
+            if (clearScene) {
+                document.querySelectorAll('.bubble').forEach(b => b.remove());
+                bubbles = [];
+            }
+            if (resetDisplay) {
+                targetPhonetic = null;
+                resetBubbleTargetDisplay();
+            }
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
         }
 
         function nextBubbleRound() {
@@ -2119,7 +2243,7 @@
             waitingForNextRound = true;
             const pool = getActivePhonetics();
             if (pool.length < 3) {
-                stopBubbleGame();
+                stopBubbleGame({ clearScene: true, resetDisplay: true });
                 showRangeWarning('当前范围不足以开始泡泡龙');
                 waitingForNextRound = false;
                 return;
@@ -2140,6 +2264,7 @@
             speakWord(wordToPlay);
             
             setTimeout(() => {
+                if (!bubbleGameActive) return;
                 document.getElementById('target-display').classList.remove('playing');
                 document.getElementById('target-display').textContent = wordToPlay;
                 document.getElementById('target-display').style.fontFamily = "'Nunito', 'Comic Neue', sans-serif";
@@ -2190,6 +2315,11 @@
 
         function updateBubbles() {
             if (!bubbleGameActive) return;
+
+            if (Date.now() < bubblePauseUntil) {
+                requestAnimationFrame(updateBubbles);
+                return;
+            }
             
             const gameArea = document.getElementById('bubble-game');
             const maxY = gameArea.offsetHeight;
@@ -2322,9 +2452,16 @@
         }
 
         function playTargetSound() {
-            if (targetPhonetic) {
-                speakPhonetic(targetPhonetic);
+            if (!targetPhonetic) return;
+            const wordToReplay = targetPhonetic.currentWord || targetPhonetic.word;
+            if (!wordToReplay) return;
+
+            // 复听时给短暂保护时间，避免边听边掉血
+            if (bubbleGameActive && !waitingForNextRound) {
+                bubblePauseUntil = Date.now() + bubbleReplayPauseMs;
             }
+
+            speakWord(wordToReplay);
         }
 
         // ============ 连连看游戏 ============
@@ -2385,6 +2522,7 @@
                 item.innerHTML = `<span class="word-emoji">${example.emoji}</span><span>${example.word}</span>`;
                 item.dataset.symbol = p.symbol;
                 item.dataset.type = 'word';
+                item.dataset.word = example.word;
                 item.dataset.index = i;
                 item.onclick = () => selectMatchItem(item, p);
                 wordColumn.appendChild(item);
@@ -2412,7 +2550,15 @@
                     selectedItem.classList.remove('selected');
                     
                     playSuccess();
-                    speakPhonetic(phonetic);
+                    const matchedWord =
+                        item.dataset.type === 'word'
+                            ? item.dataset.word
+                            : selectedItem.dataset.word;
+                    if (matchedWord) {
+                        speakWord(matchedWord);
+                    } else {
+                        speakPhonetic(phonetic);
+                    }
                     
                     matchStreak++;
                     const points = 20 * (1 + Math.floor(matchStreak / 2));
