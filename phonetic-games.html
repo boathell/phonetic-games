@@ -111,6 +111,11 @@
             color: white;
         }
 
+        .nav-btn:nth-child(4) {
+            background: linear-gradient(135deg, #feca57, #ff9f43);
+            color: white;
+        }
+
         .nav-btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -1108,6 +1113,96 @@
             to { stroke-dashoffset: -20; }
         }
 
+        /* 音标迷宫游戏 */
+        #maze-game {
+            background: linear-gradient(180deg, #f2fbff 0%, #e3f3ff 100%);
+            border-radius: 20px;
+            padding: 16px;
+            min-height: 420px;
+        }
+
+        .maze-target {
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: #5f27cd;
+            font-weight: 700;
+        }
+
+        .maze-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(52px, 1fr));
+            gap: 10px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .maze-grid.is-empty {
+            display: block;
+            max-width: none;
+        }
+
+        .maze-cell {
+            min-height: 64px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6px;
+            font-family: 'Nunito', 'Comic Neue', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            user-select: none;
+        }
+
+        .maze-cell.passable {
+            background: linear-gradient(135deg, #dff8e8, #b9f6ca);
+            color: #117a3a;
+            cursor: pointer;
+        }
+
+        .maze-cell.blocked {
+            background: linear-gradient(135deg, #f1f3f5, #dee2e6);
+            color: #7d8287;
+            cursor: not-allowed;
+        }
+
+        .maze-cell.start {
+            border-color: #48dbfb;
+            box-shadow: 0 0 0 3px rgba(72,219,251,0.2);
+        }
+
+        .maze-cell.goal {
+            border-color: #ff9f43;
+            box-shadow: 0 0 0 3px rgba(255,159,67,0.2);
+        }
+
+        .maze-cell.current {
+            border-color: #5f27cd;
+            box-shadow: 0 0 0 4px rgba(95,39,205,0.25);
+            transform: scale(1.04);
+        }
+
+        .maze-cell.invalid {
+            animation: maze-shake 0.25s ease-in-out;
+        }
+
+        @keyframes maze-shake {
+            0%, 100% { transform: translateX(0); }
+            33% { transform: translateX(-4px); }
+            66% { transform: translateX(4px); }
+        }
+
+        .maze-label {
+            display: block;
+            font-size: 0.74rem;
+            opacity: 0.85;
+            margin-top: 2px;
+        }
+
         .target-sound {
             font-size: 3rem;
             color: #5f27cd;
@@ -1293,6 +1388,22 @@
                 font-size: 1.2rem;
             }
 
+            #maze-game {
+                padding: 10px;
+                min-height: 360px;
+            }
+
+            .maze-grid {
+                gap: 7px;
+                grid-template-columns: repeat(6, minmax(40px, 1fr));
+            }
+
+            .maze-cell {
+                min-height: 52px;
+                font-size: 0.78rem;
+                padding: 4px;
+            }
+
             .bubble-header-right {
                 width: 100%;
                 justify-content: space-between;
@@ -1414,6 +1525,7 @@
             <button class="nav-btn active" onclick="switchGame(0)">🫧 泡泡龙</button>
             <button class="nav-btn" onclick="switchGame(1)">🔗 连连看</button>
             <button class="nav-btn" onclick="switchGame(2)">✨ 消消乐</button>
+            <button class="nav-btn" onclick="switchGame(3)">🗺️ 音标迷宫</button>
         </div>
 
         <div class="status-panel">
@@ -1561,6 +1673,29 @@
                 <div class="control-panel">
                     <button class="control-btn start-btn" onclick="initEliminateGame()">新的一局</button>
                     <button class="control-btn sound-btn" id="eliminate-speak-btn" onclick="speakEliminateWord()" disabled>🔊 朗读单词</button>
+                </div>
+            </div>
+
+            <!-- 游戏4: 音标迷宫 -->
+            <div class="game-section" id="game4">
+                <div class="game-header">
+                    <h2 class="game-title">🗺️ 音标迷宫</h2>
+                    <div class="score-board">
+                        <div class="score-item">得分: <span id="maze-score">0</span></div>
+                        <div class="score-item">步数: <span id="maze-steps">0</span></div>
+                    </div>
+                </div>
+
+                <div id="maze-game">
+                    <div class="maze-target" id="maze-target">目标音标: --</div>
+                    <div class="maze-grid" id="maze-grid"></div>
+                </div>
+
+                <p class="hint-text">从起点出发，只能走到与目标音标匹配的单词格，走到终点即可通关！</p>
+
+                <div class="control-panel">
+                    <button class="control-btn start-btn" onclick="initMazeGame()">新的一局</button>
+                    <button class="control-btn sound-btn" onclick="playMazeTargetSound()">🔊 听目标音</button>
                 </div>
             </div>
         </div>
@@ -1746,12 +1881,16 @@
                 { type: 'pairs', target: 5, reward: 3, desc: '消除5对' },
                 { type: 'speed_pairs', target: 3, seconds: 25, reward: 3, desc: '25秒内消除3对' },
                 { type: 'score', target: 160, reward: 2, desc: '得分达到160' }
+            ],
+            maze: [
+                { type: 'score', target: 120, reward: 3, desc: '得分达到120' },
+                { type: 'score', target: 180, reward: 4, desc: '得分达到180' }
             ]
         };
-        const missionStates = { bubble: null, match: null, eliminate: null };
+        const missionStates = { bubble: null, match: null, eliminate: null, maze: null };
         let missionState = null;
         let missionTicker = null;
-        const gameKeys = ['bubble', 'match', 'eliminate'];
+        const gameKeys = ['bubble', 'match', 'eliminate', 'maze'];
         let activeGameKey = 'bubble';
 
         function getActivePhonetics(options = {}) {
@@ -1861,6 +2000,7 @@
 
             initMatchGame();
             initEliminateGame();
+            initMazeGame();
             setActiveMission(activeGameKey);
         }
 
@@ -2042,6 +2182,7 @@
                 if (missionState.gameKey === 'bubble') progress = bubbleScore;
                 if (missionState.gameKey === 'match') progress = matchScore;
                 if (missionState.gameKey === 'eliminate') progress = eliminateScore;
+                if (missionState.gameKey === 'maze') progress = mazeScore;
             }
 
             if (missionState.type === 'speed_correct' || missionState.type === 'speed_pairs') {
@@ -2797,6 +2938,208 @@
             }
         }
 
+        // ============ 音标迷宫游戏 ============
+        let mazeScore = 0;
+        let mazeSteps = 0;
+        let mazeGridData = [];
+        let mazeTargetPhonetic = null;
+        let mazeTargetWord = '';
+        let mazePlayer = { row: 0, col: 0 };
+        const mazeRows = 6;
+        const mazeCols = 6;
+
+        function getRandomWordForPhonetic(phonetic) {
+            if (phonetic.words && phonetic.words.length > 0) {
+                return phonetic.words[Math.floor(Math.random() * phonetic.words.length)];
+            }
+            return phonetic.word || phonetic.symbol;
+        }
+
+        function getMazeNeighbors(row, col) {
+            const neighbors = [];
+            if (row > 0) neighbors.push({ row: row - 1, col: col });
+            if (row < mazeRows - 1) neighbors.push({ row: row + 1, col: col });
+            if (col > 0) neighbors.push({ row: row, col: col - 1 });
+            if (col < mazeCols - 1) neighbors.push({ row: row, col: col + 1 });
+            return neighbors;
+        }
+
+        function shuffleArray(items) {
+            const arr = [...items];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function buildMazePath() {
+            const start = { row: 0, col: 0 };
+            const goalRow = mazeRows - 1;
+            const goalCol = mazeCols - 1;
+            const stack = [start];
+            const visited = new Set(['0,0']);
+
+            while (stack.length > 0) {
+                const current = stack[stack.length - 1];
+                if (current.row === goalRow && current.col === goalCol) {
+                    return [...stack];
+                }
+
+                const options = shuffleArray(getMazeNeighbors(current.row, current.col))
+                    .filter(n => !visited.has(`${n.row},${n.col}`));
+
+                if (options.length === 0) {
+                    stack.pop();
+                    continue;
+                }
+
+                const next = options[0];
+                visited.add(`${next.row},${next.col}`);
+                stack.push(next);
+            }
+
+            return [{ row: 0, col: 0 }, { row: mazeRows - 1, col: mazeCols - 1 }];
+        }
+
+        function updateMazeBoard() {
+            const scoreEl = document.getElementById('maze-score');
+            const stepsEl = document.getElementById('maze-steps');
+            if (scoreEl) scoreEl.textContent = String(mazeScore);
+            if (stepsEl) stepsEl.textContent = String(mazeSteps);
+        }
+
+        function renderMazeGrid() {
+            const gridEl = document.getElementById('maze-grid');
+            if (!gridEl) return;
+            gridEl.classList.remove('is-empty');
+            gridEl.innerHTML = '';
+
+            mazeGridData.forEach((rowData, row) => {
+                rowData.forEach((cell, col) => {
+                    const cellEl = document.createElement('div');
+                    cellEl.className = `maze-cell ${cell.passable ? 'passable' : 'blocked'}`;
+                    if (row === 0 && col === 0) cellEl.classList.add('start');
+                    if (row === mazeRows - 1 && col === mazeCols - 1) cellEl.classList.add('goal');
+                    if (mazePlayer.row === row && mazePlayer.col === col) cellEl.classList.add('current');
+
+                    let label = '';
+                    if (row === 0 && col === 0) label = '<span class="maze-label">起点</span>';
+                    if (row === mazeRows - 1 && col === mazeCols - 1) label = '<span class="maze-label">终点</span>';
+                    cellEl.innerHTML = `<span>${cell.word}</span>${label}`;
+
+                    cellEl.onclick = () => attemptMazeMove(row, col, cellEl);
+                    gridEl.appendChild(cellEl);
+                });
+            });
+        }
+
+        function attemptMazeMove(row, col, cellEl) {
+            const distance = Math.abs(mazePlayer.row - row) + Math.abs(mazePlayer.col - col);
+            if (distance !== 1) return;
+
+            const targetCell = mazeGridData[row] && mazeGridData[row][col];
+            if (!targetCell || !targetCell.passable) {
+                cellEl.classList.add('invalid');
+                setTimeout(() => cellEl.classList.remove('invalid'), 240);
+                playError();
+                return;
+            }
+
+            mazePlayer = { row: row, col: col };
+            mazeSteps++;
+            mazeScore += 10;
+            updateMazeBoard();
+            updateMissionUI();
+            renderMazeGrid();
+
+            if (row === mazeRows - 1 && col === mazeCols - 1) {
+                mazeScore += 80;
+                updateMazeBoard();
+                updateMissionUI();
+                playSuccess();
+                celebrate();
+                showModal('迷宫通关!', mazeScore, 'maze');
+            }
+        }
+
+        function initMazeGame() {
+            mazeScore = 0;
+            mazeSteps = 0;
+            mazeGridData = [];
+            mazePlayer = { row: 0, col: 0 };
+            mazeTargetPhonetic = null;
+            mazeTargetWord = '';
+            updateMazeBoard();
+
+            const targetEl = document.getElementById('maze-target');
+            const gridEl = document.getElementById('maze-grid');
+            if (!targetEl || !gridEl) return;
+
+            const pool = getActivePhonetics({ requireWords: true, minWords: 1 });
+            if (pool.length < 2) {
+                targetEl.textContent = '当前范围至少需要2个音标才能玩迷宫';
+                gridEl.classList.add('is-empty');
+                gridEl.innerHTML = '<div class="empty-state">请多勾选一些音标范围再开始</div>';
+                return;
+            }
+            gridEl.classList.remove('is-empty');
+
+            if (isGameActive('game4')) {
+                startMission('maze');
+            }
+
+            mazeTargetPhonetic = pool[Math.floor(Math.random() * pool.length)];
+            mazeTargetWord = getRandomWordForPhonetic(mazeTargetPhonetic);
+            targetEl.textContent = `目标音标: ${mazeTargetPhonetic.symbol}（例如 ${mazeTargetWord}）`;
+
+            const path = buildMazePath();
+            const pathSet = new Set(path.map(p => `${p.row},${p.col}`));
+            const nonTargetPool = pool.filter(p => p.symbol !== mazeTargetPhonetic.symbol);
+
+            for (let row = 0; row < mazeRows; row++) {
+                const rowData = [];
+                for (let col = 0; col < mazeCols; col++) {
+                    const key = `${row},${col}`;
+                    let passable = pathSet.has(key);
+                    if (!passable && Math.random() < 0.22) {
+                        passable = true;
+                    }
+                    const sourcePhonetic = passable
+                        ? mazeTargetPhonetic
+                        : (nonTargetPool.length > 0
+                            ? nonTargetPool[Math.floor(Math.random() * nonTargetPool.length)]
+                            : mazeTargetPhonetic);
+                    rowData.push({
+                        passable: passable,
+                        symbol: sourcePhonetic.symbol,
+                        word: getRandomWordForPhonetic(sourcePhonetic)
+                    });
+                }
+                mazeGridData.push(rowData);
+            }
+
+            // 保证起点和终点一定可走
+            mazeGridData[0][0] = {
+                passable: true,
+                symbol: mazeTargetPhonetic.symbol,
+                word: getRandomWordForPhonetic(mazeTargetPhonetic)
+            };
+            mazeGridData[mazeRows - 1][mazeCols - 1] = {
+                passable: true,
+                symbol: mazeTargetPhonetic.symbol,
+                word: getRandomWordForPhonetic(mazeTargetPhonetic)
+            };
+
+            renderMazeGrid();
+            speakWord(mazeTargetWord);
+        }
+
+        function playMazeTargetSound() {
+            if (!mazeTargetPhonetic) return;
+            speakWord(mazeTargetWord || getRandomWordForPhonetic(mazeTargetPhonetic));
+        }
+
         // ============ 辅助功能 ============
         function speakPhonetic(phonetic) {
             if (!('speechSynthesis' in window)) return;
@@ -2919,6 +3262,8 @@
                 initMatchGame();
             } else if (document.getElementById('game3').classList.contains('active')) {
                 initEliminateGame();
+            } else if (document.getElementById('game4').classList.contains('active')) {
+                initMazeGame();
             }
         }
 
@@ -2927,6 +3272,7 @@
             if (e.key === '1') switchGame(0);
             if (e.key === '2') switchGame(1);
             if (e.key === '3') switchGame(2);
+            if (e.key === '4') switchGame(3);
             if (e.key === 'Escape') closeModal();
         });
 
@@ -2937,6 +3283,7 @@
         loadRangeSelection();
         initMatchGame();
         initEliminateGame();
+        initMazeGame();
         setActiveMission(activeGameKey);
     </script>
 </body>
