@@ -4,7 +4,9 @@
 
 ## 在线体验
 
-直接在浏览器中打开 `phonetic-games.html` 即可开始游戏。
+**🌐 在线访问**: [https://boathell.github.io/phonetic-games/phonetic-games.html](https://boathell.github.io/phonetic-games/phonetic-games.html)
+
+或者直接在浏览器中打开 `phonetic-games.html` 本地文件即可开始游戏。
 
 ```bash
 # 本地启动（可选）
