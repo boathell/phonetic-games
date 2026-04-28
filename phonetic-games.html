@@ -116,6 +116,11 @@
             color: white;
         }
 
+        .nav-btn:nth-child(5) {
+            background: linear-gradient(135deg, #00d2d3, #54a0ff);
+            color: white;
+        }
+
         .nav-btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -1203,6 +1208,106 @@
             margin-top: 2px;
         }
 
+        /* 复习闯关 */
+        #review-game {
+            background: linear-gradient(180deg, #fff8ef 0%, #eef9ff 100%);
+            border-radius: 20px;
+            min-height: 420px;
+            padding: 24px;
+            display: grid;
+            gap: 18px;
+            align-content: start;
+        }
+
+        .review-card {
+            background: rgba(255,255,255,0.88);
+            border-radius: 18px;
+            padding: 22px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            border: 2px solid rgba(95,39,205,0.1);
+        }
+
+        .review-label {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .review-word {
+            font-family: 'Nunito', 'Comic Neue', sans-serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 800;
+            color: #5f27cd;
+            letter-spacing: 0;
+            line-height: 1.1;
+            overflow-wrap: anywhere;
+        }
+
+        .review-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .review-option {
+            min-height: 76px;
+            border: 3px solid transparent;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            color: #5f27cd;
+            font-family: 'Comic Neue', 'Nunito', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .review-option:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.16);
+        }
+
+        .review-option:disabled {
+            cursor: default;
+        }
+
+        .review-option.correct {
+            background: linear-gradient(135deg, #dff8e8, #b9f6ca);
+            border-color: #1dd1a1;
+            color: #117a3a;
+        }
+
+        .review-option.wrong {
+            background: linear-gradient(135deg, #ffe3e3, #ffc9c9);
+            border-color: #ff6b6b;
+            color: #c92a2a;
+            animation: shake 0.35s ease-in-out;
+        }
+
+        .review-feedback {
+            min-height: 34px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .review-feedback.good {
+            color: #10ac84;
+        }
+
+        .review-feedback.bad {
+            color: #ff6b6b;
+        }
+
+        .review-progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
         .target-sound {
             font-size: 3rem;
             color: #5f27cd;
@@ -1404,6 +1509,25 @@
                 padding: 4px;
             }
 
+            #review-game {
+                padding: 14px;
+                min-height: 360px;
+            }
+
+            .review-card {
+                padding: 16px;
+            }
+
+            .review-options {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .review-option {
+                min-height: 58px;
+                font-size: 1.2rem;
+            }
+
             .bubble-header-right {
                 width: 100%;
                 justify-content: space-between;
@@ -1526,6 +1650,7 @@
             <button class="nav-btn" onclick="switchGame(1)">🔗 连连看</button>
             <button class="nav-btn" onclick="switchGame(2)">✨ 消消乐</button>
             <button class="nav-btn" onclick="switchGame(3)">🗺️ 音标迷宫</button>
+            <button class="nav-btn" onclick="switchGame(4)">📝 复习闯关</button>
         </div>
 
         <div class="status-panel">
@@ -1698,6 +1823,37 @@
                     <button class="control-btn sound-btn" onclick="playMazeTargetSound()">🔊 听目标音</button>
                 </div>
             </div>
+
+            <!-- 游戏5: 复习闯关 -->
+            <div class="game-section" id="game5">
+                <div class="game-header">
+                    <h2 class="game-title">📝 音标复习闯关</h2>
+                    <div class="score-board">
+                        <div class="score-item">得分: <span id="review-score">0</span></div>
+                        <div class="score-item">已答: <span id="review-answered">0</span></div>
+                    </div>
+                </div>
+
+                <div id="review-game">
+                    <div class="review-card">
+                        <div class="review-label" id="review-label">请选择这个单词的正确音标</div>
+                        <div class="review-word" id="review-word">准备开始</div>
+                    </div>
+                    <div class="review-options" id="review-options"></div>
+                    <div class="review-feedback" id="review-feedback"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="review-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="review-progress-text" id="review-progress-text">当前范围共 0 个单词</div>
+                </div>
+
+                <p class="hint-text">看单词，从四个音标中选出正确读音。当前范围的单词出完后会重新洗牌再来一轮！</p>
+
+                <div class="control-panel">
+                    <button class="control-btn start-btn" onclick="initReviewGame()">重新开始</button>
+                    <button class="control-btn sound-btn" onclick="playReviewWord()">🔊 朗读单词</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1721,80 +1877,80 @@
         // ============ 音标数据 ============
         const phonetics = [
             // 长元音 - /ɑ:/
-            { symbol: '/ɑ:/', category: 'long', sound: 'ar', example: 'car 🚗', word: 'car', words: ['car', 'class', 'pass', 'father', 'park', 'farm', 'half', 'calm'] },
+            { symbol: '/ɑ:/', category: 'long', sound: 'ar', example: 'car 🚗', word: 'car', words: ['car', 'class', 'pass', 'father', 'park', 'farm', 'half', 'calm', 'star', 'arm'] },
             // 长元音 - /ɔ:/
-            { symbol: '/ɔ:/', category: 'long', sound: 'or', example: 'door 🚪', word: 'door', words: ['door', 'ball', 'small', 'tall', 'draw', 'horse', 'pork', 'fork'] },
+            { symbol: '/ɔ:/', category: 'long', sound: 'or', example: 'door 🚪', word: 'door', words: ['door', 'ball', 'small', 'tall', 'draw', 'horse', 'pork', 'fork', 'corn', 'walk'] },
             // 长元音 - /ɜ:/
-            { symbol: '/ɜ:/', category: 'long', sound: 'er', example: 'bird 🐦', word: 'bird', words: ['bird', 'sir', 'shirt', 'nurse', 'purple', 'burger', 'word', 'work', 'worm'] },
+            { symbol: '/ɜ:/', category: 'long', sound: 'er', example: 'bird 🐦', word: 'bird', words: ['bird', 'sir', 'shirt', 'nurse', 'purple', 'burger', 'word', 'work', 'worm', 'her'] },
             // 长元音 - /i:/
             { symbol: '/i:/', category: 'long', sound: 'ee', example: 'sheep 🐑', word: 'sheep', words: ['sheep', 'evening', 'she', 'me', 'eat', 'meat', 'tea', 'bee', 'beef', 'feet'] },
             // 长元音 - /u:/
-            { symbol: '/u:/', category: 'long', sound: 'oo', example: 'moon 🌙', word: 'moon', words: ['moon', 'who', 'lose', 'move', 'zoo', 'goose', 'blue', 'glue', 'true'] },
+            { symbol: '/u:/', category: 'long', sound: 'oo', example: 'moon 🌙', word: 'moon', words: ['moon', 'who', 'lose', 'move', 'zoo', 'goose', 'blue', 'glue', 'true', 'food'] },
             
             // 短元音 - /ʌ/
-            { symbol: '/ʌ/', category: 'short', sound: 'u', example: 'cup ☕', word: 'cup', words: ['cup', 'cut', 'but', 'duck', 'come', 'love', 'mother'] },
+            { symbol: '/ʌ/', category: 'short', sound: 'u', example: 'cup ☕', word: 'cup', words: ['cup', 'cut', 'but', 'duck', 'come', 'love', 'mother', 'sun', 'run', 'bus'] },
             // 短元音 - /ɒ/
-            { symbol: '/ɒ/', category: 'short', sound: 'o', example: 'dog 🐕', word: 'dog', words: ['dog', 'hot', 'box'] },
+            { symbol: '/ɒ/', category: 'short', sound: 'o', example: 'dog 🐕', word: 'dog', words: ['dog', 'hot', 'box', 'pot', 'top', 'rock', 'sock', 'fox', 'clock', 'shop'] },
             // 短元音 - /ə/
             { symbol: '/ə/', category: 'short', sound: 'a', example: 'sofa 🛋️', word: 'sofa', words: ['sofa', 'about', 'banana', 'ago', 'teacher', 'farmer', 'mother', 'doctor', 'actor', 'visitor'] },
             // 短元音 - /ɪ/
             { symbol: '/ɪ/', category: 'short', sound: 'i', example: 'fish 🐟', word: 'fish', words: ['fish', 'it', 'miss', 'kiss', 'city', 'busy', 'Lily', 'decide', 'before', 'behind'] },
             // 短元音 - /ʊ/
-            { symbol: '/ʊ/', category: 'short', sound: 'u', example: 'book 📚', word: 'book', words: ['book', 'put', 'push', 'sugar', 'look', 'took', 'could', 'should', 'would'] },
+            { symbol: '/ʊ/', category: 'short', sound: 'u', example: 'book 📚', word: 'book', words: ['book', 'put', 'push', 'sugar', 'look', 'took', 'could', 'should', 'would', 'good'] },
             // 短元音 - /æ/
-            { symbol: '/æ/', category: 'short', sound: 'a', example: 'cat 🐱', word: 'cat', words: ['cat', 'fat', 'bad', 'apple', 'family', 'rabbit', 'happy'] },
+            { symbol: '/æ/', category: 'short', sound: 'a', example: 'cat 🐱', word: 'cat', words: ['cat', 'fat', 'bad', 'apple', 'family', 'rabbit', 'happy', 'hand', 'bag', 'map'] },
             // 短元音 - /e/
-            { symbol: '/e/', category: 'short', sound: 'e', example: 'bed 🛏️', word: 'bed', words: ['bed', 'egg', 'red', 'any', 'many', 'anyone', 'head', 'bread', 'ready'] },
+            { symbol: '/e/', category: 'short', sound: 'e', example: 'bed 🛏️', word: 'bed', words: ['bed', 'egg', 'red', 'any', 'many', 'anyone', 'head', 'bread', 'ready', 'ten'] },
             
             // 双元音
-            { symbol: '/ɔɪ/', category: 'diphthong', sound: 'oi', example: 'boy 👦', word: 'boy', words: ['boy', 'toy', 'coin', 'noise'] },
-            { symbol: '/aɪ/', category: 'diphthong', sound: 'ai', example: 'kite 🪁', word: 'kite', words: ['kite', 'bike', 'five', 'nine'] },
-            { symbol: '/əʊ/', category: 'diphthong', sound: 'ou', example: 'boat ⛵', word: 'boat', words: ['boat', 'go', 'home', 'nose'] },
-            { symbol: '/aʊ/', category: 'diphthong', sound: 'au', example: 'cow 🐄', word: 'cow', words: ['cow', 'house', 'mouse', 'out'] },
-            { symbol: '/ɪə/', category: 'diphthong', sound: 'ear', example: 'ear 👂', word: 'ear', words: ['ear', 'dear', 'near', 'here'] },
-            { symbol: '/eɪ/', category: 'diphthong', sound: 'ay', example: 'cake 🎂', word: 'cake', words: ['cake', 'rain', 'train', 'day'] },
-            { symbol: '/eə/', category: 'diphthong', sound: 'air', example: 'hair 💇', word: 'hair', words: ['hair', 'bear', 'chair', 'pear'] },
-            { symbol: '/ʊə/', category: 'diphthong', sound: 'ure', example: 'tour 🗺️', word: 'tour', words: ['tour', 'sure', 'cure', 'pure'] },
+            { symbol: '/ɔɪ/', category: 'diphthong', sound: 'oi', example: 'boy 👦', word: 'boy', words: ['boy', 'toy', 'coin', 'noise', 'oil', 'join', 'voice', 'point', 'soil', 'boil'] },
+            { symbol: '/aɪ/', category: 'diphthong', sound: 'ai', example: 'kite 🪁', word: 'kite', words: ['kite', 'bike', 'five', 'nine', 'ice', 'time', 'like', 'my', 'fly', 'sky'] },
+            { symbol: '/əʊ/', category: 'diphthong', sound: 'ou', example: 'boat ⛵', word: 'boat', words: ['boat', 'go', 'home', 'nose', 'no', 'so', 'old', 'road', 'coat', 'snow'] },
+            { symbol: '/aʊ/', category: 'diphthong', sound: 'au', example: 'cow 🐄', word: 'cow', words: ['cow', 'house', 'mouse', 'out', 'now', 'down', 'brown', 'town', 'mouth', 'flower'] },
+            { symbol: '/ɪə/', category: 'diphthong', sound: 'ear', example: 'ear 👂', word: 'ear', words: ['ear', 'dear', 'near', 'here', 'clear', 'year', 'fear', 'beer', 'deer', 'tear'] },
+            { symbol: '/eɪ/', category: 'diphthong', sound: 'ay', example: 'cake 🎂', word: 'cake', words: ['cake', 'rain', 'train', 'day', 'play', 'say', 'name', 'game', 'face', 'eight'] },
+            { symbol: '/eə/', category: 'diphthong', sound: 'air', example: 'hair 💇', word: 'hair', words: ['hair', 'bear', 'chair', 'pear', 'air', 'fair', 'care', 'share', 'square', 'wear'] },
+            { symbol: '/ʊə/', category: 'diphthong', sound: 'ure', example: 'tour 🗺️', word: 'tour', words: ['tour', 'sure', 'cure', 'pure', 'poor', 'your', 'lure', 'moor', 'jury', 'during'] },
 
             // 辅音 - 爆破音
-            { symbol: '/p/', category: 'plosive', sound: 'p', example: 'pig 🐷', word: 'pig', words: ['pig', 'pen', 'pet'] },
-            { symbol: '/t/', category: 'plosive', sound: 't', example: 'sit 🪑', word: 'sit', words: ['sit', 'butter', 'tiger'] },
-            { symbol: '/k/', category: 'plosive', sound: 'k', example: 'keep 🔑', word: 'keep', words: ['keep', 'lock', 'cat', 'cup', 'card', 'key', 'like', 'desk', 'clock', 'mock', 'ache', 'echo', 'Christmas'] },
-            { symbol: '/b/', category: 'plosive', sound: 'b', example: 'big 🐘', word: 'big', words: ['big', 'bat', 'box'] },
-            { symbol: '/d/', category: 'plosive', sound: 'd', example: 'desk 🪑', word: 'desk', words: ['deep', 'dark', 'desk'] },
-            { symbol: '/g/', category: 'plosive', sound: 'g', example: 'good 👍', word: 'good', words: ['good', 'get', 'egg'] },
+            { symbol: '/p/', category: 'plosive', sound: 'p', example: 'pig 🐷', word: 'pig', words: ['pig', 'pen', 'pet', 'park', 'cup', 'map', 'top', 'cap', 'apple', 'happy'] },
+            { symbol: '/t/', category: 'plosive', sound: 't', example: 'sit 🪑', word: 'sit', words: ['sit', 'butter', 'tiger', 'top', 'tea', 'ten', 'cat', 'hat', 'table', 'toy'] },
+            { symbol: '/k/', category: 'plosive', sound: 'k', example: 'keep 🔑', word: 'keep', words: ['keep', 'lock', 'cat', 'cup', 'card', 'key', 'clock', 'cake', 'kite', 'milk'] },
+            { symbol: '/b/', category: 'plosive', sound: 'b', example: 'big 🐘', word: 'big', words: ['big', 'bat', 'box', 'bag', 'bed', 'bus', 'ball', 'boy', 'book', 'baby'] },
+            { symbol: '/d/', category: 'plosive', sound: 'd', example: 'desk 🪑', word: 'desk', words: ['deep', 'dark', 'desk', 'dog', 'day', 'door', 'duck', 'red', 'bed', 'dad'] },
+            { symbol: '/g/', category: 'plosive', sound: 'g', example: 'good 👍', word: 'good', words: ['good', 'get', 'egg', 'girl', 'go', 'game', 'green', 'bag', 'dog', 'big'] },
 
             // 辅音 - 摩擦音
-            { symbol: '/f/', category: 'fricative', sound: 'f', example: 'fish 🐟', word: 'fish', words: ['fat', 'five', 'life', 'photo', 'phone', 'dolphin', 'elephant', 'telephone', 'four', 'fish'] },
-            { symbol: '/v/', category: 'fricative', sound: 'v', example: 'very 🙂', word: 'very', words: ['have', 'river', 'very'] },
-            { symbol: '/s/', category: 'fricative', sound: 's', example: 'small 🐭', word: 'small', words: ['small', 'size', 'ask', 'face', 'race', 'rice', 'circle'] },
-            { symbol: '/z/', category: 'fricative', sound: 'z', example: 'zoo 🦁', word: 'zoo', words: ['zero', 'zebra', 'zoo', 'nose', 'rose', 'praise'] },
-            { symbol: '/ʃ/', category: 'fricative', sound: 'sh', example: 'fish 🐟', word: 'fish', words: ['fish'] },
-            { symbol: '/ʒ/', category: 'fricative', sound: 'zh', example: 'vision 📺', word: 'vision', words: ['decision', 'Asia', 'vision', 'television', 'measure', 'pleasure', 'usually'] },
-            { symbol: '/θ/', category: 'fricative', sound: 'th', example: 'three 3️⃣', word: 'three', words: ['three', 'math', 'path'] },
-            { symbol: '/ð/', category: 'fricative', sound: 'th', example: 'this 👉', word: 'this', words: ['this', 'these', 'mother'] },
-            { symbol: '/h/', category: 'fricative', sound: 'h', example: 'how ❓', word: 'how', words: ['how', 'hut', 'hide', 'who', 'whole', 'whoever'] },
-            { symbol: '/r/', category: 'fricative', sound: 'r', example: 'red 🔴', word: 'red', words: ['red', 'read', 'rise', 'rose', 'write', 'wrap', 'wrist', 'wrong'] },
+            { symbol: '/f/', category: 'fricative', sound: 'f', example: 'fish 🐟', word: 'fish', words: ['fish', 'fat', 'five', 'four', 'fox', 'face', 'farm', 'leaf', 'life', 'phone'] },
+            { symbol: '/v/', category: 'fricative', sound: 'v', example: 'very 🙂', word: 'very', words: ['very', 'have', 'river', 'van', 'vase', 'vest', 'seven', 'five', 'love', 'voice'] },
+            { symbol: '/s/', category: 'fricative', sound: 's', example: 'small 🐭', word: 'small', words: ['small', 'size', 'ask', 'face', 'race', 'rice', 'circle', 'sun', 'sit', 'snake'] },
+            { symbol: '/z/', category: 'fricative', sound: 'z', example: 'zoo 🦁', word: 'zoo', words: ['zero', 'zebra', 'zoo', 'nose', 'rose', 'praise', 'zip', 'buzz', 'size', 'lazy'] },
+            { symbol: '/ʃ/', category: 'fricative', sound: 'sh', example: 'fish 🐟', word: 'fish', words: ['fish', 'she', 'ship', 'shop', 'shoe', 'sheep', 'short', 'shirt', 'wash', 'dish'] },
+            { symbol: '/ʒ/', category: 'fricative', sound: 'zh', example: 'vision 📺', word: 'vision', words: ['vision', 'Asia', 'measure', 'pleasure', 'treasure', 'usually', 'television', 'decision', 'garage', 'beige'] },
+            { symbol: '/θ/', category: 'fricative', sound: 'th', example: 'three 3️⃣', word: 'three', words: ['three', 'math', 'path', 'thin', 'thank', 'think', 'bath', 'mouth', 'tooth', 'birthday'] },
+            { symbol: '/ð/', category: 'fricative', sound: 'th', example: 'this 👉', word: 'this', words: ['this', 'these', 'mother', 'that', 'they', 'them', 'then', 'father', 'brother', 'weather'] },
+            { symbol: '/h/', category: 'fricative', sound: 'h', example: 'how ❓', word: 'how', words: ['how', 'hut', 'hide', 'hat', 'house', 'horse', 'hot', 'he', 'her', 'home'] },
+            { symbol: '/r/', category: 'fricative', sound: 'r', example: 'red 🔴', word: 'red', words: ['red', 'read', 'rise', 'rose', 'write', 'wrap', 'wrist', 'wrong', 'rabbit', 'rice'] },
 
             // 辅音 - 鼻音
-            { symbol: '/m/', category: 'nasal', sound: 'm', example: 'May 🌸', word: 'May', words: ['May', 'March', 'aim'] },
-            { symbol: '/n/', category: 'nasal', sound: 'n', example: 'night 🌙', word: 'night', words: ['night', 'kind', 'green', 'know', 'knight', 'knock'] },
-            { symbol: '/ŋ/', category: 'nasal', sound: 'ng', example: 'song 🎵', word: 'song', words: ['think', 'bank', 'tank', 'long', 'song', 'ring', 'finger'] },
+            { symbol: '/m/', category: 'nasal', sound: 'm', example: 'May 🌸', word: 'May', words: ['May', 'March', 'aim', 'man', 'map', 'mom', 'moon', 'milk', 'mouse', 'come'] },
+            { symbol: '/n/', category: 'nasal', sound: 'n', example: 'night 🌙', word: 'night', words: ['night', 'kind', 'green', 'know', 'knight', 'knock', 'nose', 'nine', 'pen', 'sun'] },
+            { symbol: '/ŋ/', category: 'nasal', sound: 'ng', example: 'song 🎵', word: 'song', words: ['think', 'bank', 'tank', 'long', 'song', 'ring', 'finger', 'sing', 'king', 'morning'] },
 
             // 辅音 - 舌边音
-            { symbol: '/l/', category: 'lateral', sound: 'l', example: 'like 👍', word: 'like', words: ['label', 'letter', 'like', 'lose', 'lucky', 'please', 'allow', 'world', 'girl', 'sale', 'feel', 'while', 'boil'] },
+            { symbol: '/l/', category: 'lateral', sound: 'l', example: 'like 👍', word: 'like', words: ['like', 'label', 'letter', 'lose', 'lucky', 'please', 'allow', 'world', 'girl', 'feel'] },
 
             // 辅音 - 半元音
-            { symbol: '/w/', category: 'semivowel', sound: 'w', example: 'wish ✨', word: 'wish', words: ['wish', 'work', 'water', 'when', 'where', 'what'] },
-            { symbol: '/j/', category: 'semivowel', sound: 'y', example: 'yes ✅', word: 'yes', words: ['you', 'yes', 'yellow'] },
+            { symbol: '/w/', category: 'semivowel', sound: 'w', example: 'wish ✨', word: 'wish', words: ['wish', 'work', 'water', 'when', 'where', 'what', 'we', 'wet', 'win', 'window'] },
+            { symbol: '/j/', category: 'semivowel', sound: 'y', example: 'yes ✅', word: 'yes', words: ['you', 'yes', 'yellow', 'year', 'yard', 'young', 'yum', 'yesterday', 'yogurt', 'onion'] },
 
             // 辅音 - 破擦音
-            { symbol: '/tr/', category: 'affricate', sound: 'tr', example: 'tree 🌳', word: 'tree', words: ['tree', 'try', 'true'] },
-            { symbol: '/dr/', category: 'affricate', sound: 'dr', example: 'dream 💭', word: 'dream', words: ['dry', 'dream', 'draw'] },
-            { symbol: '/tʃ/', category: 'affricate', sound: 'ch', example: 'chat 💬', word: 'chat', words: ['chat', 'China', 'Chinese', 'teach'] },
-            { symbol: '/dʒ/', category: 'affricate', sound: 'j', example: 'job 💼', word: 'job', words: ['job', 'juice', 'joke', 'jeans', 'age', 'cabbage', 'message', 'fridge', 'bridge', 'judge'] },
-            { symbol: '/ts/', category: 'affricate', sound: 'ts', example: 'fruits 🍓', word: 'fruits', words: ['fruits', 'hats', 'robots', 'shorts', 'gifts'] },
-            { symbol: '/dz/', category: 'affricate', sound: 'dz', example: 'cards 🃏', word: 'cards', words: ['cards', 'sends', 'beds', 'reads', 'rides'] }
+            { symbol: '/tr/', category: 'affricate', sound: 'tr', example: 'tree 🌳', word: 'tree', words: ['tree', 'try', 'true', 'train', 'truck', 'trip', 'track', 'trick', 'trash', 'travel'] },
+            { symbol: '/dr/', category: 'affricate', sound: 'dr', example: 'dream 💭', word: 'dream', words: ['dry', 'dream', 'draw', 'drink', 'drive', 'drop', 'dress', 'drum', 'dragon', 'drill'] },
+            { symbol: '/tʃ/', category: 'affricate', sound: 'ch', example: 'chat 💬', word: 'chat', words: ['chat', 'China', 'Chinese', 'teach', 'chair', 'cheese', 'chicken', 'watch', 'match', 'beach'] },
+            { symbol: '/dʒ/', category: 'affricate', sound: 'j', example: 'job 💼', word: 'job', words: ['job', 'juice', 'joke', 'jeans', 'age', 'fridge', 'bridge', 'judge', 'giraffe', 'orange'] },
+            { symbol: '/ts/', category: 'affricate', sound: 'ts', example: 'fruits 🍓', word: 'fruits', words: ['fruits', 'hats', 'robots', 'shorts', 'gifts', 'cats', 'boats', 'kites', 'lights', 'coats'] },
+            { symbol: '/dz/', category: 'affricate', sound: 'dz', example: 'cards 🃏', word: 'cards', words: ['cards', 'sends', 'beds', 'reads', 'rides', 'hands', 'friends', 'birds', 'kids', 'words'] }
         ];
 
         const bubbleColors = [
@@ -1885,12 +2041,16 @@
             maze: [
                 { type: 'score', target: 120, reward: 3, desc: '得分达到120' },
                 { type: 'score', target: 180, reward: 4, desc: '得分达到180' }
+            ],
+            review: [
+                { type: 'score', target: 100, reward: 2, desc: '复习得分达到100' },
+                { type: 'review_correct', target: 10, reward: 2, desc: '累计答对10题' }
             ]
         };
-        const missionStates = { bubble: null, match: null, eliminate: null, maze: null };
+        const missionStates = { bubble: null, match: null, eliminate: null, maze: null, review: null };
         let missionState = null;
         let missionTicker = null;
-        const gameKeys = ['bubble', 'match', 'eliminate', 'maze'];
+        const gameKeys = ['bubble', 'match', 'eliminate', 'maze', 'review'];
         let activeGameKey = 'bubble';
 
         function getActivePhonetics(options = {}) {
@@ -2001,6 +2161,7 @@
             initMatchGame();
             initEliminateGame();
             initMazeGame();
+            initReviewGame();
             setActiveMission(activeGameKey);
         }
 
@@ -2178,11 +2339,13 @@
             if (missionState.type === 'combo') progress = combo;
             if (missionState.type === 'streak') progress = matchStreak;
             if (missionState.type === 'pairs') progress = eliminateMatchedPairs;
+            if (missionState.type === 'review_correct') progress = reviewCorrectCount;
             if (missionState.type === 'score') {
                 if (missionState.gameKey === 'bubble') progress = bubbleScore;
                 if (missionState.gameKey === 'match') progress = matchScore;
                 if (missionState.gameKey === 'eliminate') progress = eliminateScore;
                 if (missionState.gameKey === 'maze') progress = mazeScore;
+                if (missionState.gameKey === 'review') progress = reviewScore;
             }
 
             if (missionState.type === 'speed_correct' || missionState.type === 'speed_pairs') {
@@ -3132,12 +3295,239 @@
             };
 
             renderMazeGrid();
-            speakWord(mazeTargetWord);
+            if (isGameActive('game4')) {
+                speakWord(mazeTargetWord);
+            }
         }
 
         function playMazeTargetSound() {
             if (!mazeTargetPhonetic) return;
             speakWord(mazeTargetWord || getRandomWordForPhonetic(mazeTargetPhonetic));
+        }
+
+        // ============ 复习闯关 ============
+        let reviewScore = 0;
+        let reviewAnswered = 0;
+        let reviewCorrectCount = 0;
+        let reviewRoundsCompleted = 0;
+        let reviewDeck = [];
+        let reviewDeckIndex = 0;
+        let reviewCurrentQuestion = null;
+        let reviewLocked = false;
+        let reviewLastCorrectIndex = -1;
+
+        const reviewSimilarGroups = {
+            long: ['short', 'diphthong'],
+            short: ['long', 'diphthong'],
+            diphthong: ['long', 'short'],
+            plosive: ['affricate', 'fricative'],
+            fricative: ['affricate', 'plosive'],
+            nasal: ['lateral', 'semivowel', 'plosive'],
+            lateral: ['nasal', 'semivowel', 'fricative'],
+            semivowel: ['lateral', 'nasal', 'fricative'],
+            affricate: ['fricative', 'plosive']
+        };
+
+        function getReviewElements() {
+            return {
+                word: document.getElementById('review-word'),
+                options: document.getElementById('review-options'),
+                feedback: document.getElementById('review-feedback'),
+                score: document.getElementById('review-score'),
+                answered: document.getElementById('review-answered'),
+                progress: document.getElementById('review-progress'),
+                progressText: document.getElementById('review-progress-text')
+            };
+        }
+
+        function buildReviewDeck() {
+            const pool = getActivePhonetics({ requireWords: true, minWords: 1 });
+            const questions = [];
+            pool.forEach(phonetic => {
+                const uniqueWords = [...new Set(phonetic.words)];
+                uniqueWords.forEach(word => {
+                    questions.push({
+                        word: word,
+                        symbol: phonetic.symbol,
+                        category: phonetic.category
+                    });
+                });
+            });
+            return shuffleArray(questions);
+        }
+
+        function updateReviewBoard() {
+            const els = getReviewElements();
+            if (els.score) els.score.textContent = String(reviewScore);
+            if (els.answered) els.answered.textContent = String(reviewAnswered);
+            const total = reviewDeck.length;
+            const current = total > 0 ? Math.min(reviewDeckIndex + 1, total) : 0;
+            if (els.progress) {
+                els.progress.style.width = total > 0 ? `${Math.round((reviewDeckIndex / total) * 100)}%` : '0%';
+            }
+            if (els.progressText) {
+                els.progressText.textContent = total > 0
+                    ? `本轮 ${current}/${total} · 已完成 ${reviewRoundsCompleted} 轮`
+                    : '当前范围没有可用单词';
+            }
+        }
+
+        function initReviewGame() {
+            reviewScore = 0;
+            reviewAnswered = 0;
+            reviewCorrectCount = 0;
+            reviewRoundsCompleted = 0;
+            reviewDeck = buildReviewDeck();
+            reviewDeckIndex = 0;
+            reviewCurrentQuestion = null;
+            reviewLocked = false;
+            reviewLastCorrectIndex = -1;
+
+            const els = getReviewElements();
+            if (els.feedback) {
+                els.feedback.textContent = '';
+                els.feedback.className = 'review-feedback';
+            }
+            if (els.options) els.options.innerHTML = '';
+            updateReviewBoard();
+
+            if (isGameActive('game5')) {
+                startMission('review');
+            }
+
+            if (reviewDeck.length === 0) {
+                if (els.word) els.word.textContent = '暂无题目';
+                if (els.options) els.options.innerHTML = '<div class="empty-state">当前范围没有可用单词</div>';
+                return;
+            }
+
+            showNextReviewQuestion();
+        }
+
+        function startNextReviewRound() {
+            reviewRoundsCompleted++;
+            addStars(3);
+            celebrate();
+            updateMissionUI();
+            reviewDeck = buildReviewDeck();
+            reviewDeckIndex = 0;
+        }
+
+        function getReviewDistractors(question) {
+            const activePool = getActivePhonetics();
+            const allSymbols = [...new Map(phonetics.map(p => [p.symbol, p])).values()];
+            const picked = new Map();
+
+            const addCandidates = (items) => {
+                items.forEach(item => {
+                    if (item.symbol !== question.symbol && !picked.has(item.symbol)) {
+                        picked.set(item.symbol, item);
+                    }
+                });
+            };
+
+            addCandidates(activePool.filter(p => p.category === question.category));
+            const similarCategories = reviewSimilarGroups[question.category] || [];
+            addCandidates(activePool.filter(p => similarCategories.includes(p.category)));
+            addCandidates(activePool);
+            addCandidates(allSymbols);
+
+            return shuffleArray([...picked.values()]).slice(0, 3);
+        }
+
+        function buildReviewOptions(question) {
+            const options = [
+                { symbol: question.symbol, correct: true },
+                ...getReviewDistractors(question).map(p => ({ symbol: p.symbol, correct: false }))
+            ];
+            let shuffled = shuffleArray(options);
+            if (shuffled.length > 1) {
+                let correctIndex = shuffled.findIndex(option => option.correct);
+                let attempts = 0;
+                while (correctIndex === reviewLastCorrectIndex && attempts < 8) {
+                    shuffled = shuffleArray(options);
+                    correctIndex = shuffled.findIndex(option => option.correct);
+                    attempts++;
+                }
+            }
+            return shuffled;
+        }
+
+        function showNextReviewQuestion() {
+            if (reviewDeck.length === 0) {
+                initReviewGame();
+                return;
+            }
+            if (reviewDeckIndex >= reviewDeck.length) {
+                startNextReviewRound();
+            }
+
+            reviewLocked = false;
+            reviewCurrentQuestion = reviewDeck[reviewDeckIndex];
+            const options = buildReviewOptions(reviewCurrentQuestion);
+            reviewLastCorrectIndex = options.findIndex(option => option.correct);
+            const els = getReviewElements();
+
+            if (els.word) els.word.textContent = reviewCurrentQuestion.word;
+            if (els.feedback) {
+                els.feedback.textContent = '选择正确的音标';
+                els.feedback.className = 'review-feedback';
+            }
+            if (els.options) {
+                els.options.innerHTML = '';
+                options.forEach(option => {
+                    const btn = document.createElement('button');
+                    btn.className = 'review-option';
+                    btn.type = 'button';
+                    btn.textContent = option.symbol;
+                    btn.dataset.correct = option.correct ? 'true' : 'false';
+                    btn.onclick = () => answerReviewQuestion(btn, option);
+                    els.options.appendChild(btn);
+                });
+            }
+            updateReviewBoard();
+        }
+
+        function answerReviewQuestion(button, option) {
+            if (reviewLocked || !reviewCurrentQuestion) return;
+            reviewLocked = true;
+            reviewAnswered++;
+
+            const els = getReviewElements();
+            const buttons = els.options ? [...els.options.querySelectorAll('.review-option')] : [];
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.dataset.correct === 'true') btn.classList.add('correct');
+            });
+
+            if (option.correct) {
+                reviewScore += 10;
+                reviewCorrectCount++;
+                button.classList.add('correct');
+                if (els.feedback) {
+                    els.feedback.textContent = `答对了！+10 分`;
+                    els.feedback.className = 'review-feedback good';
+                }
+                playSuccess();
+                speakWord(reviewCurrentQuestion.word);
+            } else {
+                button.classList.add('wrong');
+                if (els.feedback) {
+                    els.feedback.textContent = `正确答案是 ${reviewCurrentQuestion.symbol}`;
+                    els.feedback.className = 'review-feedback bad';
+                }
+                playError();
+            }
+
+            reviewDeckIndex++;
+            updateReviewBoard();
+            updateMissionUI();
+            setTimeout(showNextReviewQuestion, option.correct ? 900 : 1400);
+        }
+
+        function playReviewWord() {
+            if (!reviewCurrentQuestion) return;
+            speakWord(reviewCurrentQuestion.word);
         }
 
         // ============ 辅助功能 ============
@@ -3264,6 +3654,8 @@
                 initEliminateGame();
             } else if (document.getElementById('game4').classList.contains('active')) {
                 initMazeGame();
+            } else if (document.getElementById('game5').classList.contains('active')) {
+                initReviewGame();
             }
         }
 
@@ -3273,6 +3665,7 @@
             if (e.key === '2') switchGame(1);
             if (e.key === '3') switchGame(2);
             if (e.key === '4') switchGame(3);
+            if (e.key === '5') switchGame(4);
             if (e.key === 'Escape') closeModal();
         });
 
@@ -3284,6 +3677,7 @@
         initMatchGame();
         initEliminateGame();
         initMazeGame();
+        initReviewGame();
         setActiveMission(activeGameKey);
     </script>
 </body>
