@@ -1831,6 +1831,7 @@
                     <div class="score-board">
                         <div class="score-item">得分: <span id="review-score">0</span></div>
                         <div class="score-item">已答: <span id="review-answered">0</span></div>
+                        <div class="score-item">语音提示: <span id="review-voice-count">0</span> 次</div>
                     </div>
                 </div>
 
@@ -1851,6 +1852,7 @@
 
                 <div class="control-panel">
                     <button class="control-btn start-btn" onclick="initReviewGame()">重新开始</button>
+                    <button class="control-btn sound-btn" id="review-voice-toggle" type="button" aria-pressed="false" onclick="toggleReviewVoiceHint()">语音提示: 关</button>
                     <button class="control-btn sound-btn" onclick="playReviewWord()">🔊 朗读单词</button>
                 </div>
             </div>
@@ -3315,6 +3317,8 @@
         let reviewCurrentQuestion = null;
         let reviewLocked = false;
         let reviewLastCorrectIndex = -1;
+        let reviewVoiceHintEnabled = false;
+        let reviewVoiceHintCount = 0;
 
         const reviewSimilarGroups = {
             long: ['short', 'diphthong'],
@@ -3330,14 +3334,57 @@
 
         function getReviewElements() {
             return {
+                label: document.getElementById('review-label'),
                 word: document.getElementById('review-word'),
                 options: document.getElementById('review-options'),
                 feedback: document.getElementById('review-feedback'),
                 score: document.getElementById('review-score'),
                 answered: document.getElementById('review-answered'),
+                voiceCount: document.getElementById('review-voice-count'),
+                voiceToggle: document.getElementById('review-voice-toggle'),
                 progress: document.getElementById('review-progress'),
                 progressText: document.getElementById('review-progress-text')
             };
+        }
+
+        function getReviewSoundPosition(word, phonetic) {
+            const normalizedWord = word.toLowerCase();
+            const sound = phonetic.sound.toLowerCase();
+            const spellingsBySymbol = {
+                '/k/': ['k', 'c', 'ck'],
+                '/f/': ['f', 'ph'],
+                '/ʃ/': ['sh'],
+                '/tʃ/': ['ch', 'tch'],
+                '/dʒ/': ['j', 'g', 'dge'],
+                '/ŋ/': ['ng'],
+                '/θ/': ['th'],
+                '/ð/': ['th'],
+                '/j/': ['y'],
+                '/əʊ/': ['o', 'oa', 'ow'],
+                '/eɪ/': ['a', 'ai', 'ay', 'eigh'],
+                '/aɪ/': ['i', 'y', 'igh'],
+                '/ɔɪ/': ['oi', 'oy'],
+                '/aʊ/': ['ou', 'ow'],
+                '/ɪə/': ['ear', 'eer', 'ere'],
+                '/eə/': ['air', 'are', 'ear'],
+                '/ʊə/': ['ure', 'our']
+            };
+            const spellings = spellingsBySymbol[phonetic.symbol] || [sound];
+
+            if (spellings.some(spelling => normalizedWord.startsWith(spelling))) return '开头';
+            if (spellings.some(spelling => normalizedWord.endsWith(spelling))) return '结尾';
+            return '中间';
+        }
+
+        function getReviewQuestionLabel(question) {
+            return `请选择单词 ${question.word} ${question.position} 的正确音标`;
+        }
+
+        function getSymbolsForReviewWord(word) {
+            const normalizedWord = word.toLowerCase();
+            return phonetics
+                .filter(phonetic => Array.isArray(phonetic.words) && phonetic.words.some(item => item.toLowerCase() === normalizedWord))
+                .map(phonetic => phonetic.symbol);
         }
 
         function buildReviewDeck() {
@@ -3349,7 +3396,8 @@
                     questions.push({
                         word: word,
                         symbol: phonetic.symbol,
-                        category: phonetic.category
+                        category: phonetic.category,
+                        position: getReviewSoundPosition(word, phonetic)
                     });
                 });
             });
@@ -3360,6 +3408,11 @@
             const els = getReviewElements();
             if (els.score) els.score.textContent = String(reviewScore);
             if (els.answered) els.answered.textContent = String(reviewAnswered);
+            if (els.voiceCount) els.voiceCount.textContent = String(reviewVoiceHintCount);
+            if (els.voiceToggle) {
+                els.voiceToggle.textContent = reviewVoiceHintEnabled ? '语音提示: 开' : '语音提示: 关';
+                els.voiceToggle.setAttribute('aria-pressed', reviewVoiceHintEnabled ? 'true' : 'false');
+            }
             const total = reviewDeck.length;
             const current = total > 0 ? Math.min(reviewDeckIndex + 1, total) : 0;
             if (els.progress) {
@@ -3382,6 +3435,8 @@
             reviewCurrentQuestion = null;
             reviewLocked = false;
             reviewLastCorrectIndex = -1;
+            reviewVoiceHintEnabled = false;
+            reviewVoiceHintCount = 0;
 
             const els = getReviewElements();
             if (els.feedback) {
@@ -3416,11 +3471,12 @@
         function getReviewDistractors(question) {
             const activePool = getActivePhonetics();
             const allSymbols = [...new Map(phonetics.map(p => [p.symbol, p])).values()];
+            const sameWordSymbols = getSymbolsForReviewWord(question.word);
             const picked = new Map();
 
             const addCandidates = (items) => {
                 items.forEach(item => {
-                    if (item.symbol !== question.symbol && !picked.has(item.symbol)) {
+                    if (item.symbol !== question.symbol && !sameWordSymbols.includes(item.symbol) && !picked.has(item.symbol)) {
                         picked.set(item.symbol, item);
                     }
                 });
@@ -3468,6 +3524,7 @@
             reviewLastCorrectIndex = options.findIndex(option => option.correct);
             const els = getReviewElements();
 
+            if (els.label) els.label.textContent = getReviewQuestionLabel(reviewCurrentQuestion);
             if (els.word) els.word.textContent = reviewCurrentQuestion.word;
             if (els.feedback) {
                 els.feedback.textContent = '选择正确的音标';
@@ -3485,6 +3542,19 @@
                     els.options.appendChild(btn);
                 });
             }
+            updateReviewBoard();
+            playReviewVoiceHint();
+        }
+
+        function playReviewVoiceHint() {
+            if (!reviewVoiceHintEnabled || !reviewCurrentQuestion) return;
+            speakWord(reviewCurrentQuestion.word);
+            reviewVoiceHintCount++;
+            updateReviewBoard();
+        }
+
+        function toggleReviewVoiceHint() {
+            reviewVoiceHintEnabled = !reviewVoiceHintEnabled;
             updateReviewBoard();
         }
 
@@ -3509,11 +3579,10 @@
                     els.feedback.className = 'review-feedback good';
                 }
                 playSuccess();
-                speakWord(reviewCurrentQuestion.word);
             } else {
                 button.classList.add('wrong');
                 if (els.feedback) {
-                    els.feedback.textContent = `正确答案是 ${reviewCurrentQuestion.symbol}`;
+                    els.feedback.textContent = `${reviewCurrentQuestion.position} 的正确答案是 ${reviewCurrentQuestion.symbol}`;
                     els.feedback.className = 'review-feedback bad';
                 }
                 playError();
