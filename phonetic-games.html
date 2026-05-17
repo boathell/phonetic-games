@@ -1244,6 +1244,10 @@
             overflow-wrap: anywhere;
         }
 
+        .review-letter-highlight {
+            color: #ff2d55;
+        }
+
         .review-options {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3317,6 +3321,7 @@
         let reviewCurrentQuestion = null;
         let reviewLocked = false;
         let reviewLastCorrectIndex = -1;
+        let reviewRetryAvailable = true;
         let reviewVoiceHintEnabled = false;
         let reviewVoiceHintCount = 0;
 
@@ -3347,18 +3352,36 @@
             };
         }
 
-        function getReviewSoundPosition(word, phonetic) {
+        function getReviewSoundTarget(word, phonetic) {
             const normalizedWord = word.toLowerCase();
             const sound = phonetic.sound.toLowerCase();
             const spellingsBySymbol = {
+                '/ɑ:/': ['ar', 'al', 'a'],
+                '/ɔ:/': ['oor', 'ore', 'or', 'all', 'al', 'aw'],
+                '/ɜ:/': ['ir', 'ur', 'er', 'or'],
+                '/i:/': ['ee', 'ea', 'e'],
+                '/u:/': ['oo', 'ue', 'u', 'o'],
+                '/ʌ/': ['u', 'o', 'ou'],
+                '/ɒ/': ['o', 'a'],
+                '/ə/': ['er', 'or', 'ar', 'a', 'o'],
+                '/ɪ/': ['i', 'u', 'e'],
+                '/ʊ/': ['oo', 'ou', 'u'],
+                '/æ/': ['a'],
+                '/e/': ['ea', 'ai', 'e', 'a'],
                 '/k/': ['k', 'c', 'ck'],
                 '/f/': ['f', 'ph'],
+                '/s/': ['s', 'c'],
+                '/z/': ['z', 's', 'zz'],
                 '/ʃ/': ['sh'],
+                '/ʒ/': ['si', 'su', 's', 'ge', 'g'],
                 '/tʃ/': ['ch', 'tch'],
-                '/dʒ/': ['j', 'g', 'dge'],
+                '/dʒ/': ['j', 'g', 'ge', 'dge'],
+                '/n/': ['n', 'kn'],
                 '/ŋ/': ['ng'],
                 '/θ/': ['th'],
                 '/ð/': ['th'],
+                '/r/': ['r', 'wr'],
+                '/w/': ['w', 'wh'],
                 '/j/': ['y'],
                 '/əʊ/': ['o', 'oa', 'ow'],
                 '/eɪ/': ['a', 'ai', 'ay', 'eigh'],
@@ -3370,14 +3393,73 @@
                 '/ʊə/': ['ure', 'our']
             };
             const spellings = spellingsBySymbol[phonetic.symbol] || [sound];
+            const isValidReviewSpelling = (spelling, start) => {
+                const end = start + spelling.length;
+                if (phonetic.symbol === '/ɪ/' && spelling === 'e' && end === normalizedWord.length && normalizedWord.length > 1) {
+                    return false;
+                }
+                return true;
+            };
 
-            if (spellings.some(spelling => normalizedWord.startsWith(spelling))) return '开头';
-            if (spellings.some(spelling => normalizedWord.endsWith(spelling))) return '结尾';
-            return '中间';
+            const sortedSpellings = [...spellings].sort((a, b) => b.length - a.length);
+            let match = sortedSpellings
+                .map(spelling => ({ spelling: spelling, start: normalizedWord.startsWith(spelling) ? 0 : -1 }))
+                .filter(item => item.start === -1 || isValidReviewSpelling(item.spelling, item.start))
+                .find(item => item.start !== -1);
+            if (!match) {
+                match = sortedSpellings
+                    .map(spelling => ({
+                        spelling: spelling,
+                        start: normalizedWord.endsWith(spelling) ? normalizedWord.length - spelling.length : -1
+                    }))
+                    .filter(item => item.start === -1 || isValidReviewSpelling(item.spelling, item.start))
+                    .find(item => item.start !== -1);
+            }
+            if (!match) {
+                match = sortedSpellings
+                    .map(spelling => ({ spelling: spelling, start: normalizedWord.indexOf(spelling) }))
+                    .filter(item => item.start !== -1 && isValidReviewSpelling(item.spelling, item.start))
+                    .sort((a, b) => a.start - b.start || b.spelling.length - a.spelling.length)[0];
+            }
+
+            if (match) {
+                let position = '中间';
+                if (match.start === 0) position = '开头';
+                if (match.start + match.spelling.length === normalizedWord.length) position = '结尾';
+                return {
+                    position: position,
+                    start: match.start,
+                    end: match.start + match.spelling.length
+                };
+            }
+
+            return {
+                position: '红色字母',
+                start: 0,
+                end: Math.min(1, word.length)
+            };
         }
 
         function getReviewQuestionLabel(question) {
-            return `请选择单词 ${question.word} ${question.position} 的正确音标`;
+            return '请选择红色字母的正确音标';
+        }
+
+        function renderReviewWord(wordEl, question) {
+            wordEl.innerHTML = '';
+            const target = question.target || { start: 0, end: Math.min(1, question.word.length) };
+            const start = Math.max(0, Math.min(target.start, question.word.length));
+            const end = Math.max(start, Math.min(target.end, question.word.length));
+
+            const before = document.createTextNode(question.word.slice(0, start));
+            const highlight = document.createElement('span');
+            const after = document.createTextNode(question.word.slice(end));
+
+            highlight.className = 'review-letter-highlight';
+            highlight.textContent = question.word.slice(start, end);
+
+            wordEl.appendChild(before);
+            wordEl.appendChild(highlight);
+            wordEl.appendChild(after);
         }
 
         function getSymbolsForReviewWord(word) {
@@ -3393,11 +3475,13 @@
             pool.forEach(phonetic => {
                 const uniqueWords = [...new Set(phonetic.words)];
                 uniqueWords.forEach(word => {
+                    const target = getReviewSoundTarget(word, phonetic);
                     questions.push({
                         word: word,
                         symbol: phonetic.symbol,
                         category: phonetic.category,
-                        position: getReviewSoundPosition(word, phonetic)
+                        position: target.position,
+                        target: target
                     });
                 });
             });
@@ -3435,6 +3519,7 @@
             reviewCurrentQuestion = null;
             reviewLocked = false;
             reviewLastCorrectIndex = -1;
+            reviewRetryAvailable = true;
             reviewVoiceHintEnabled = false;
             reviewVoiceHintCount = 0;
 
@@ -3519,13 +3604,14 @@
             }
 
             reviewLocked = false;
+            reviewRetryAvailable = true;
             reviewCurrentQuestion = reviewDeck[reviewDeckIndex];
             const options = buildReviewOptions(reviewCurrentQuestion);
             reviewLastCorrectIndex = options.findIndex(option => option.correct);
             const els = getReviewElements();
 
             if (els.label) els.label.textContent = getReviewQuestionLabel(reviewCurrentQuestion);
-            if (els.word) els.word.textContent = reviewCurrentQuestion.word;
+            if (els.word) renderReviewWord(els.word, reviewCurrentQuestion);
             if (els.feedback) {
                 els.feedback.textContent = '选择正确的音标';
                 els.feedback.className = 'review-feedback';
@@ -3553,6 +3639,13 @@
             updateReviewBoard();
         }
 
+        function replayReviewWordAsHint() {
+            if (!reviewCurrentQuestion) return;
+            speakWord(reviewCurrentQuestion.word);
+            reviewVoiceHintCount++;
+            updateReviewBoard();
+        }
+
         function toggleReviewVoiceHint() {
             reviewVoiceHintEnabled = !reviewVoiceHintEnabled;
             updateReviewBoard();
@@ -3565,12 +3658,12 @@
 
             const els = getReviewElements();
             const buttons = els.options ? [...els.options.querySelectorAll('.review-option')] : [];
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                if (btn.dataset.correct === 'true') btn.classList.add('correct');
-            });
 
             if (option.correct) {
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.dataset.correct === 'true') btn.classList.add('correct');
+                });
                 reviewScore += 10;
                 reviewCorrectCount++;
                 button.classList.add('correct');
@@ -3579,19 +3672,39 @@
                     els.feedback.className = 'review-feedback good';
                 }
                 playSuccess();
+                reviewDeckIndex++;
+                updateReviewBoard();
+                updateMissionUI();
+                setTimeout(showNextReviewQuestion, 900);
             } else {
+                button.disabled = true;
                 button.classList.add('wrong');
-                if (els.feedback) {
-                    els.feedback.textContent = `${reviewCurrentQuestion.position} 的正确答案是 ${reviewCurrentQuestion.symbol}`;
-                    els.feedback.className = 'review-feedback bad';
-                }
                 playError();
+                if (reviewRetryAvailable) {
+                    reviewRetryAvailable = false;
+                    if (els.feedback) {
+                        els.feedback.textContent = '再听一遍单词，再试一次';
+                        els.feedback.className = 'review-feedback bad';
+                    }
+                    replayReviewWordAsHint();
+                    reviewLocked = false;
+                    updateReviewBoard();
+                    updateMissionUI();
+                } else {
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.dataset.correct === 'true') btn.classList.add('correct');
+                    });
+                    if (els.feedback) {
+                        els.feedback.textContent = `红色字母的正确答案是 ${reviewCurrentQuestion.symbol}`;
+                        els.feedback.className = 'review-feedback bad';
+                    }
+                    reviewDeckIndex++;
+                    updateReviewBoard();
+                    updateMissionUI();
+                    setTimeout(showNextReviewQuestion, 1400);
+                }
             }
-
-            reviewDeckIndex++;
-            updateReviewBoard();
-            updateMissionUI();
-            setTimeout(showNextReviewQuestion, option.correct ? 900 : 1400);
         }
 
         function playReviewWord() {
